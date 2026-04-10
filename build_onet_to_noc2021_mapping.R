@@ -1,3 +1,4 @@
+VERSION <- "1.0.0"
 # Build weighted O*NET 2019 -> NOC 2021 mapping
 
 # ------------------------------------------------------------------
@@ -16,7 +17,7 @@ suppressPackageStartupMessages({
   library(stringr)
 })
 
-out_dir <- "output"
+out_dir <- paste0("output/",VERSION)
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
 # ------------------------------------------------------------------
@@ -244,7 +245,8 @@ metadata_lines <- c(
   sprintf("n_paths: %s", nrow(onet_to_noc2021_paths)),
   sprintf("n_untrimmed_rows: %s", nrow(mapping_untrimmed)),
   sprintf("n_trimmed_rows: %s", nrow(mapping_trimmed)),
-  sprintf("n_noc2021: %s", n_distinct(mapping_trimmed$noc_plus_title))
+  sprintf("n_noc2021: %s", n_distinct(mapping_trimmed$noc_plus_title)),
+  sprintf("version: %s", VERSION)
 )
 writeLines(metadata_lines, file.path(out_dir, "run_metadata.txt"))
 
