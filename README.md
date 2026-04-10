@@ -125,13 +125,13 @@ This lets you:
 ```r
 library(readr)
 
-mapping <- read_csv("https://github.com/bcgov/onet-noc2021-crosswalk/main/output/1.0.0/onet_to_noc2021_mapping_trimmed.csv")
+mapping <- read_csv("https://raw.githubusercontent.com/bcgov/onet-noc2021-crosswalk/main/output/1.0.0/onet_to_noc2021_mapping_trimmed.csv")
 
-strength <- read_csv("https://github.com/bcgov/onet-noc2021-crosswalk/main/output/1.0.0/onet_to_noc2021_mapping_strength.csv")
+strength <- read_csv("https://raw.githubusercontent.com/bcgov/onet-noc2021-crosswalk/main/output/1.0.0/onet_to_noc2021_mapping_strength.csv")
 
 ```
 
-Note: above URLs point to version 1.0.0. New versions will become available in the future when mapping changes.
+Note: above URLs point to version 1.0.0. (future changes likely)
 
 ---
 
@@ -143,9 +143,7 @@ Clone from github and
 source("build_onet_to_noc2021_mapping.R")
 ```
 
----
-
-## Tuning parameters
+which allows you to choose tuning parameters
 
 ```r
 cumulative_skill_weight_cutoff <- 0.8
