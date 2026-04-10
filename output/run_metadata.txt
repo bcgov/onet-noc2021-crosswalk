@@ -1,4 +1,4 @@
-Run timestamp: 2026-04-10 12:33:24.558851
+Run timestamp: 2026-04-10 13:55:59.361138
 cumulative_skill_weight_cutoff: 0.8
 herf_cut: 0.166666666666667
 n_paths: 1728
