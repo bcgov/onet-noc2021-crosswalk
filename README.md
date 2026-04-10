@@ -125,13 +125,13 @@ This lets you:
 ```r
 library(readr)
 
-mapping <- read_csv("https://github.com/bcgov/onet-noc2021-crosswalk/blob/main/output/onet_to_noc2021_mapping_trimmed.csv")
+mapping <- read_csv("https://github.com/bcgov/onet-noc2021-crosswalk/blob/main/output/1.0.0/onet_to_noc2021_mapping_trimmed.csv")
 
-strength <- read_csv("https://github.com/bcgov/onet-noc2021-crosswalk/blob/main/output/onet_to_noc2021_mapping_strength.csv")
+strength <- read_csv("https://github.com/bcgov/onet-noc2021-crosswalk/blob/main/output/1.0.0/onet_to_noc2021_mapping_strength.csv")
 
 ```
 
-Note: URLs point to the main branch and may change if the mapping is updated. For reproducibility, consider downloading a specific release.
+Note: above URLs point to version 1.0.0. New versions will become available in the future when mapping changes.
 
 ---
 
