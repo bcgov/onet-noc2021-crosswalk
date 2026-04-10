@@ -1,0 +1,7 @@
+Run timestamp: 2026-04-10 12:33:24.558851
+cumulative_skill_weight_cutoff: 0.8
+herf_cut: 0.166666666666667
+n_paths: 1728
+n_untrimmed_rows: 1702
+n_trimmed_rows: 1460
+n_noc2021: 504
