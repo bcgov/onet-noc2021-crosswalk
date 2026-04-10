@@ -125,9 +125,9 @@ This lets you:
 ```r
 library(readr)
 
-mapping <- read_csv("https://github.com/bcgov/onet-noc2021-crosswalk/blob/main/output/1.0.0/onet_to_noc2021_mapping_trimmed.csv")
+mapping <- read_csv("https://github.com/bcgov/onet-noc2021-crosswalk/main/output/1.0.0/onet_to_noc2021_mapping_trimmed.csv")
 
-strength <- read_csv("https://github.com/bcgov/onet-noc2021-crosswalk/blob/main/output/1.0.0/onet_to_noc2021_mapping_strength.csv")
+strength <- read_csv("https://github.com/bcgov/onet-noc2021-crosswalk/main/output/1.0.0/onet_to_noc2021_mapping_strength.csv")
 
 ```
 
