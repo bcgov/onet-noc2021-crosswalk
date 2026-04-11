@@ -1,9 +1,9 @@
-# O*NET 2019 → NOC 2021 Crosswalk
+# O*NET 2019 → NOC 2021 Crosswalk V2.0.0
 
 A reproducible mapping from **O*NET-SOC 2019** occupations to **NOC 2021** that:
 
 - assigns **weights** to many-to-many mappings  
-- **trims low-weight noise**  
+- **downweights low-weight occupations** (noise reduction)  
 - provides a **measure of mapping quality** (Herfindahl index)
 
 This is a **data product**, not an R package.
@@ -25,7 +25,7 @@ This project does something different:
 | Output | One skill profile per NOC | Distribution over O*NET occupations |
 | Mapping | Internal / opaque | Explicit and reproducible |
 | Uncertainty | Not reported | Quantified (Herfindahl index) |
-| Flexibility | Fixed | Tunable (trimming, filtering) |
+| Flexibility | Fixed | Tunable  |
 
 OaSIS effectively **resolves mapping internally**.
 
@@ -40,14 +40,14 @@ Running the build script produces:
 - **`onet_to_noc2021_paths.csv`**  
   All admissible mapping paths and weights
 
-- **`onet_to_noc2021_mapping_untrimmed.csv`**  
+- **`onet_to_noc2021_mapping.csv`**  
   Full mapping (can be noisy)
 
-- **`onet_to_noc2021_mapping_trimmed.csv`**  
-  Practical mapping after trimming
-
-- **`onet_to_noc2021_mapping_strength.csv`**  
+- **`onet_to_noc2021_mapping_strength.csv`** 
   Mapping quality (Herfindahl index)
+  
+- **`onet_data.csv`**
+  Rescaled ONET skills, abilities, knowledge, and work activities
 
 ---
 
@@ -56,10 +56,6 @@ Running the build script produces:
 The mapping answers:
 
 > For a given NOC 2021 occupation, which O*NET occupations contribute skill content, and with what weights?
-
-This is **not** a simple forward crosswalk.
-
-Weights are normalized **within each NOC**.
 
 ---
 
@@ -89,15 +85,10 @@ Then aggregated to O*NET–NOC pairs.
 
 ---
 
-## Trimming (important)
+## Down weighting
 
-Low-weight contributions are trimmed within each NOC:
-
-- sort O*NET occupations by weight  
-- keep until cumulative weight ≥ threshold (default: 0.8)  
-- retain ties  
-
-This reduces noise while preserving dominant mappings.
+Base weights are squared (the default) and then renormalized to downweight small
+contributors.
 
 ---
 
@@ -123,15 +114,14 @@ This lets you:
 ## How to use
 
 ```r
-library(readr)
 
-mapping <- read_csv("https://raw.githubusercontent.com/bcgov/onet-noc2021-crosswalk/main/output/1.0.0/onet_to_noc2021_mapping_trimmed.csv")
+mapping <- readr::read_csv("https://raw.githubusercontent.com/bcgov/onet-noc2021-crosswalk/main/output/2.0.0/onet_to_noc2021_mapping.csv")
 
-strength <- read_csv("https://raw.githubusercontent.com/bcgov/onet-noc2021-crosswalk/main/output/1.0.0/onet_to_noc2021_mapping_strength.csv")
+strength <- readr::read_csv("https://raw.githubusercontent.com/bcgov/onet-noc2021-crosswalk/main/output/2.0.0/onet_to_noc2021_mapping_strength.csv")
 
 ```
 
-Note: above URLs point to version 1.0.0. (future changes likely)
+Note: above URLs point to version 2.0.0. (future changes likely)
 
 ---
 
@@ -140,18 +130,16 @@ Note: above URLs point to version 1.0.0. (future changes likely)
 Clone from github and 
 
 ```r
-source("build_onet_to_noc2021_mapping.R")
+source("onet_noc_mapping.R")
 ```
 
 which allows you to choose tuning parameters
 
 ```r
-cumulative_skill_weight_cutoff <- 0.8
-herf_cut <- 1/6
+gt_one = 2
 ```
 
-- `cutoff`: controls trimming aggressiveness  
-- `herf_cut`: classifies mappings as strong vs weak  
+- `gt_one`: the power to raise base weights (should be greater than 1)
 
 ---
 
@@ -168,7 +156,7 @@ herf_cut <- 1/6
 - constructed concordance (not official)  
 - equal weights are mechanical  
 - depends on crosswalk chain quality  
-- trimming involves judgment  
+- choice of `gt_one` requires judgement   
 
 ---
 
@@ -196,7 +184,7 @@ This makes it straightforward to:
 
 ```
 onet-to-noc2021-crosswalk/
-├── build_onet_to_noc2021_mapping.R
+├── onet_noc_mapping.R
 ├── data-raw/
 ├── output/
 └── README.md
