@@ -1,0 +1,5 @@
+Run timestamp: 2026-04-11 14:38:46.858163
+n_paths: 1728
+n_mapping_rows: 1702
+n_noc2021: 504
+version: 2.0.0

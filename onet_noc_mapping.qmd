@@ -1,0 +1,326 @@
+---
+title: "Transparent O*NET to NOC 2021 Mapping"
+format:
+  html:
+    code-fold: true
+---
+
+```{r, include=FALSE}
+library(tidyverse)
+library(reactable)
+library(fs)
+# find latest version directory under output/
+version_dirs <- fs::dir_ls("output", type = "directory")
+
+version_tbl <- tibble(
+  path = version_dirs,
+  version = fs::path_file(path)
+) |>
+  mutate(valid = grepl("^\\d+\\.\\d+\\.\\d+$", version)) |>
+  filter(valid)
+
+if (nrow(version_tbl) == 0) {
+  stop("No valid version directories found under 'output/'")
+}
+
+versions <- numeric_version(version_tbl$version)
+
+latest_dir <- version_tbl$path[order(versions, decreasing = TRUE)[1]]
+latest_version <- fs::path_file(latest_dir)
+message("Using data from: ", latest_dir)
+
+onet_to_noc2021_paths <- read_csv(paste0(latest_dir,"/onet_to_noc2021_paths.csv"))
+onet_data <- read_csv(paste0(latest_dir,"/onet_data.csv"))
+mapping <- read_csv(paste0(latest_dir,"/onet_to_noc2021_mapping.csv"))
+mapping_strength <- read_csv(paste0(latest_dir,"/onet_to_noc2021_mapping_strength.csv"))
+# -----------------------------------------------------------------
+# Naive mapping 
+#-----------------------------------------------------------------
+
+naive_mapping <- onet_to_noc2021_paths|>
+  select(onet_soc_code, onet_plus_title, noc_2021, noc_plus_title)
+
+# ---------------------------------------------------------------
+# Comparison between down_weight and naive_mapping
+#----------------------------------------------------------------
+
+naive_skills <- left_join(naive_mapping, onet_data, by = join_by(onet_soc_code)) |>
+  select(-onet_soc_code) |>
+  group_by(noc_plus_title) |>
+  summarise(across(where(is.numeric), \(x) mean(x, na.rm = TRUE)))
+
+downweight_skills <- mapping|>
+  select(onet_soc_code, noc_plus_title, down_weight)|>
+  left_join(onet_data, by = join_by(onet_soc_code))|>
+  mutate(across(where(is.numeric) & !all_of("down_weight"), ~ .x * down_weight)) |>
+  group_by(noc_plus_title) |>
+  summarise(across(where(is.numeric), ~ sum(.x, na.rm = TRUE)))|>
+  select(-down_weight)
+
+#ensure alignment------------------------
+
+naive_mat <- naive_skills |>
+  column_to_rownames("noc_plus_title")
+
+downweight_mat <- downweight_skills |>
+  column_to_rownames("noc_plus_title")
+
+common_noc <- intersect(rownames(naive_mat), rownames(downweight_mat))
+common_vars <- intersect(colnames(naive_mat), colnames(downweight_mat))
+
+naive_mat <- naive_mat[common_noc, common_vars]
+downweight_mat <- downweight_mat[common_noc, common_vars]
+
+stopifnot(all(rownames(naive_mat) == rownames(downweight_mat)))
+
+delta_euclid <- sqrt(rowSums((naive_mat - downweight_mat)^2))
+
+tbbl_delta <- tibble(
+  noc_plus_title = rownames(naive_mat),
+  delta_euclid = delta_euclid
+)
+
+tbbl_compare <- tbbl_delta |>
+  left_join(mapping_strength, by = join_by(noc_plus_title))
+
+```
+
+## Data version
+
+This document uses mapping version: **`r latest_version`**
+
+
+## 1. Why not just use OaSIS?
+
+OaSIS provides occupation-level skill profiles for Canadian classifications, making it an attractive alternative. However, it does not expose how those profiles are constructed.
+
+- No observable mapping between O*NET and NOC occupations  
+- No weights linking underlying occupations  
+- No information on how multiple occupations are combined  
+
+As a result, users cannot audit or replicate how each skill profile is formed.
+
+This project instead constructs the mapping explicitly, allowing:
+
+- full transparency of inputs and weights  
+- diagnostic evaluation of mapping quality  
+- reproducibility of all outputs  
+
+---
+
+## 2. Why naive crosswalk chaining fails
+
+A common approach is to join crosswalks:
+
+O*NET → SOC → NOC
+
+This produces many-to-many expansions and implicitly assigns equal weight across all paths.
+
+This leads to:
+
+- over-weighting of occupations that appear frequently in crosswalk chains  
+- inclusion of unrelated occupations  
+- distorted skill vectors 
+
+For instance, consider 72600: Air pilots, flight engineers and flying instructors. The naive 
+mapping would apply equal weighting to the following rows:
+
+```{r}
+naive_mapping|> 
+  filter(noc_plus_title == "72600: Air pilots, flight engineers and flying instructors")|>
+  select(onet_plus_title, noc_plus_title)|>
+  reactable(
+  columns = list(onet_plus_title = colDef(name = "O*NET occupation"),
+                 noc_plus_title = colDef(name = "NOC")),
+  searchable = FALSE,
+  filterable = FALSE,
+  sortable = TRUE,
+  pagination = FALSE,
+  bordered = TRUE,
+  striped = TRUE,
+  highlight = TRUE
+)
+```
+
+---
+
+Only $\frac38$ of the skill profile for NOC 72600: Air pilots, flight engineers and flying instructors is coming from pilots! The other $\frac58$ is derived from the skill profiles of agricultural workers.  
+
+---
+
+## 3. Mapping construction
+
+The mapping is constructed in three stages:
+
+1. O*NET 2019 → SOC 2018  
+2. SOC 2018 → NOC 2016  
+3. NOC 2016 → NOC 2021  
+
+Each stage introduces potential one-to-many relationships.
+
+### Path weights
+
+Weights are assigned as:
+
+$$
+w_{path} = w_1 \times w_2 \times w_3
+$$
+
+where each stage distributes mass equally across branches.
+
+### Aggregation
+
+Weights are aggregated to the NOC level and normalized.
+
+### Downweighting
+
+A power transformation is applied:
+
+$$
+\tilde{w}_k \propto w_k^{2}
+$$
+
+to reduce the influence of small-weight links.
+
+Now we can return to our 72600: Air pilots, flight engineers and flying instructors example, and investigate these weights.
+
+```{r}
+mapping|> 
+  filter(noc_plus_title == "72600: Air pilots, flight engineers and flying instructors")|>
+  select(onet_plus_title, noc_plus_title, base_weight, down_weight)|>
+  reactable(
+  columns = list(onet_plus_title = colDef(name = "O*NET occupation"),
+                 noc_plus_title = colDef(name = "NOC"),
+                 base_weight= colDef(name = "Base Weight", format = colFormat(digits = 2)),
+                 down_weight= colDef(name = "Down Weight", format = colFormat(digits = 2))
+                 ),
+  searchable = FALSE,
+  filterable = FALSE,
+  sortable = TRUE,
+  pagination = FALSE,
+  bordered = TRUE,
+  striped = TRUE,
+  highlight = TRUE
+)
+```
+
+---
+
+Using the base weights, 78% of the skill profile is being derived from pilots.  Recall in the naive case, only 37.5% of the skill profile came from pilots. Things improve further if one uses the down weight: now 96% of the skill profile is derived from pilots.  This is the most extreme example of a difference in skill profile between the naive weights and either the base or down weights. 
+
+---
+
+## 4. Outputs
+
+The build process produces:
+
+- `onet_to_noc2021_paths`  
+- `mapping`  
+- `mapping_strength`  
+
+Each output is fully reproducible from raw inputs.
+
+---
+
+## 5. Diagnostics for interpretation
+
+Two key diagnostics are provided:
+
+### Mapping concentration (Herfindahl)
+
+$$
+H = \sum_k w_k^2
+$$
+
+Interpretation:
+
+- High H → well-defined occupation  
+- Low H → heterogeneous occupation  
+
+### Sensitivity to naive mapping (Δ)
+
+$$
+\Delta = || s_{naive} - s_{weighted} ||
+$$
+
+Interpretation:
+
+- Large Δ → naive mapping is misleading  
+- Small Δ → naive mapping is acceptable  
+
+---
+
+## 6. Interpreting H and Δ
+
+These measure different things:
+
+- **H**: whether a single skill profile is meaningful  
+- **Δ**: whether naive mapping introduces error  
+
+### Cases
+
+- High H, low Δ → stable and well-defined  
+- High H, high Δ → naive mapping contaminated  
+- Low H, NOC is inherently too broad, no way to fix  
+
+### Plot
+
+```{r}
+plt <- ggplot(tbbl_compare, aes(x = down_herf, y = delta_euclid, label=noc_plus_title)) +
+  geom_point(alpha = 0.25) +
+  labs(
+    x = "Herfindahl (mapping concentration)",
+    y = "Change in skill vector (Euclidean distance)"
+  )
+plotly::ggplotly(plt)
+```
+
+
+
+---
+
+## 7. Low H example
+
+41200: University professors and lecturers are a good example of a NOC where there 
+is no solution to the problem that this group is just too diverse to be represented by a
+single skill profile. 
+
+```{r}
+mapping|> 
+  filter(noc_plus_title == "41200: University professors and lecturers")|>
+  select(onet_plus_title, noc_plus_title, base_weight, down_weight)|>
+  reactable(
+  columns = list(onet_plus_title = colDef(name = "O*NET occupation"),
+                 noc_plus_title = colDef(name = "NOC"),
+                 base_weight= colDef(name = "Base Weight", format = colFormat(digits = 2)),
+                 down_weight= colDef(name = "Down Weight", format = colFormat(digits = 2))
+                 ),
+  searchable = FALSE,
+  filterable = FALSE,
+  sortable = TRUE,
+  pagination = TRUE,
+  bordered = TRUE,
+  striped = TRUE,
+  highlight = TRUE
+)
+```
+---
+
+## 8. Guidance for use
+
+- Use down weight mapping as default  
+- Treat mapped skill profiles of low-H occupations with caution  
+- Avoid naive mapping  
+
+---
+
+## 9. Reproducibility
+
+All results are generated from:
+
+- O*NET data  
+- published crosswalks  
+
+The full pipeline is contained in the build script.
+
+Version: `r latest_version`

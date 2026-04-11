@@ -1,0 +1,505 @@
+noc_plus_title,noc_2021,base_herf,down_herf
+00018: Senior managers - public and private sector,00018,0.34080000000000005,0.4429676651458044
+10010: Financial managers,10010,0.3333333333333333,0.3333333333333333
+10011: Human resources managers,10011,0.3333333333333333,0.3333333333333333
+10012: Purchasing managers,10012,0.9232,0.9965398027807728
+10019: Other administrative services managers,10019,0.2775011317338162,0.3629064664727532
+"10020: Insurance, real estate and financial brokerage managers",10020,0.25333333333333335,0.43859649122807026
+"10021: Banking, credit and other investment managers",10021,0.3333333333333333,0.3333333333333333
+"10022: Advertising, marketing and public relations managers",10022,0.18131219429920728,0.27498453217955654
+10029: Other business services managers,10029,0.16666666666666666,0.16666666666666666
+10030: Telecommunication carriers managers,10030,1,1
+11100: Financial auditors and accountants,11100,0.23555555555555557,0.48451406194375235
+11102: Financial advisors,11102,0.20987654320987653,0.22491349480968859
+"11103: Securities agents, investment dealers and brokers",11103,1,1
+11109: Other financial officers,11109,0.20987654320987653,0.22491349480968859
+11200: Human resources professionals,11200,0.12517357667129536,0.2092093399403759
+11201: Professional occupations in business management consulting,11201,1,1
+"11202: Professional occupations in advertising, marketing and public relations",11202,0.19287109375,0.23117128665278003
+"12010: Supervisors, general office and administrative support workers",12010,1,1
+"12011: Supervisors, finance and insurance office workers",12011,1,1
+"12012: Supervisors, library, correspondence and related information workers",12012,1,1
+"12013: Supervisors, supply chain, tracking and scheduling coordination occupations",12013,0.23246707013171947,0.2765068279515676
+12100: Executive assistants,12100,1,1
+12101: Human resources and recruitment officers,12101,0.5,0.5
+12102: Procurement and purchasing agents and officers,12102,0.5555555555555556,0.6799999999999999
+12103: Conference and event planners,12103,1,1
+12104: Employment insurance and revenue officers,12104,0.2421875,0.38761706555671177
+"12110: Court reporters, medical transcriptionists and related occupations",12110,0.5555555555555556,0.6799999999999999
+12111: Health information management occupations,12111,1,1
+12112: Records management technicians,12112,1,1
+12113: Statistical officers and related research support occupations,12113,0.5,0.5
+12200: Accounting technicians and bookkeepers,12200,1,1
+12201: Insurance adjusters and claims examiners,12201,0.5,0.5
+12202: Insurance underwriters,12202,1,1
+"12203: Assessors, business valuators and appraisers",12203,0.5,0.5
+13100: Administrative officers,13100,0.29865459730919464,0.4770965693995415
+13101: Property administrators,13101,0.5,0.5
+13102: Payroll administrators,13102,1,1
+13110: Administrative assistants,13110,0.3877551020408163,0.7174515235457063
+13111: Legal administrative assistants,13111,1,1
+13112: Medical administrative assistants,13112,0.5555555555555556,0.6799999999999999
+"13200: Customs, ship and other brokers",13200,0.25,0.25
+13201: Production and transportation logistics coordinators,13201,0.19724217178971562,0.34501829495577147
+14100: General office support workers,14100,0.26530612244897955,0.2899408284023669
+14101: Receptionists,14101,0.3333333333333333,0.3333333333333333
+14102: Personnel clerks,14102,1,1
+14103: Court clerks and related court services occupations,14103,0.47205707491082044,0.6925556281684422
+14110: Survey interviewers and statistical clerks,14110,0.3600000000000001,0.4074074074074074
+14111: Data entry clerks,14111,1,1
+14112: Desktop publishing operators and related occupations,14112,0.5555555555555556,0.6799999999999999
+14200: Accounting and related clerks,14200,0.375,0.5
+"14201: Banking, insurance and other financial clerks",14201,0.21875,0.25510204081632654
+14202: Collection clerks,14202,1,1
+14300: Library assistants and clerks,14300,1,1
+"14301: Correspondence, publication and regulatory clerks",14301,0.3877551020408163,0.4515235457063711
+14400: Shippers and receivers,14400,1,1
+14401: Storekeepers and partspersons,14401,0.5555555555555556,0.6799999999999999
+14402: Production logistics workers,14402,1,1
+14403: Purchasing and inventory control workers,14403,0.5555555555555556,0.6799999999999999
+14404: Dispatchers,14404,0.6800000000000002,0.8892733564013842
+14405: Transportation route and crew schedulers,14405,1,1
+20010: Engineering managers,20010,0.5,0.5
+20011: Architecture and science managers,20011,0.18518518518518517,0.22666666666666666
+20012: Computer and information systems managers,20012,1,1
+21100: Physicists and astronomers,21100,0.2941176470588235,0.3721799307958477
+21101: Chemists,21101,0.4049586776859505,0.5801749271137027
+21102: Geoscientists and oceanographers,21102,0.5,0.5
+21103: Meteorologists and climatologists,21103,1,1
+21109: Other professional occupations in physical sciences,21109,0.3600000000000001,0.4074074074074074
+21110: Biologists and related scientists,21110,0.07174515235457064,0.10112878460368806
+21111: Forestry professionals,21111,1,1
+"21112: Agricultural representatives, consultants and specialists",21112,0.26530612244897955,0.2899408284023669
+21120: Public and environmental health and safety professionals,21120,0.5555555555555556,0.6799999999999999
+21200: Architects,21200,1,1
+21201: Landscape architects,21201,1,1
+21202: Urban and land use planners,21202,1,1
+21203: Land surveyors,21203,0.5,0.5
+"21210: Mathematicians, statisticians and actuaries",21210,0.15235457063711913,0.16099173553719012
+21211: Data scientists,21211,0.10847620573626017,0.13398453949019157
+21220: Cybersecurity specialists,21220,0.26530612244897955,0.2899408284023669
+21221: Business systems specialists,21221,0.26530612244897955,0.2899408284023669
+21222: Information systems specialists,21222,0.26530612244897955,0.2899408284023669
+21223: Database analysts and data administrators,21223,0.20000000000000004,0.20000000000000004
+21230: Computer systems developers and programmers,21230,0.5555555555555556,0.6799999999999999
+21231: Software engineers and designers,21231,0.5555555555555556,0.6799999999999999
+21232: Software developers and programmers,21232,0.5555555555555556,0.6799999999999999
+21233: Web designers,21233,0.2179930795847751,0.32728647014361306
+21234: Web developers and programmers,21234,0.2839506172839506,0.3383742911153119
+21300: Civil engineers,21300,0.25,0.25
+21301: Mechanical engineers,21301,0.25,0.25
+21310: Electrical and electronics engineers,21310,0.375,0.5
+21311: Computer engineers (except software engineers and designers),21311,0.21875,0.25510204081632654
+21320: Chemical engineers,21320,0.5555555555555556,0.6799999999999999
+21321: Industrial and manufacturing engineers,21321,0.16666666666666666,0.16666666666666666
+21322: Metallurgical and materials engineers,21322,1,1
+21330: Mining engineers,21330,1,1
+21331: Geological engineers,21331,1,1
+21332: Petroleum engineers,21332,1,1
+21390: Aerospace engineers,21390,1,1
+21399: Other professional engineers,21399,0.0929705215419501,0.09577632361689471
+22100: Chemical technologists and technicians,22100,0.1875,0.25
+22101: Geological and mineral technologists and technicians,22101,1,1
+22110: Biological technologists and technicians,22110,0.26530612244897955,0.2899408284023669
+22111: Agricultural and fish products inspectors,22111,1,1
+22112: Forestry technologists and technicians,22112,0.3600000000000001,0.4074074074074074
+22113: Conservation and fishery officers,22113,1,1
+22114: Landscape and horticulture technicians and specialists,22114,0.5,0.5
+22210: Architectural technologists and technicians,22210,1,1
+22211: Industrial designers,22211,1,1
+22212: Drafting technologists and technicians,22212,0.3600000000000001,0.4074074074074074
+22213: Land survey technologists and technicians,22213,1,1
+22214: Technical occupations in geomatics and meteorology,22214,0.28,0.3877551020408164
+22220: Computer network and web technicians,22220,0.125,0.125
+22221: User support technicians,22221,1,1
+22222: Information systems testing technicians,22222,1,1
+22230: Non-destructive testers and inspectors,22230,0.5,0.5
+22231: Engineering inspectors and regulatory officers,22231,0.10249307479224377,0.15850986121256394
+22232: Occupational health and safety specialists,22232,0.2222222222222222,0.3125
+22233: Construction inspectors,22233,0.5,0.5
+22300: Civil engineering technologists and technicians,22300,0.18000000000000005,0.2037037037037037
+22301: Mechanical engineering technologists and technicians,22301,0.16000000000000003,0.203125
+22302: Industrial engineering and manufacturing technologists and technicians,22302,0.3333333333333333,0.3333333333333333
+22303: Construction estimators,22303,1,1
+22310: Electrical and electronics engineering technologists and technicians,22310,0.21875,0.25510204081632654
+22311: Electronic service technicians (household and business equipment),22311,0.12948960302457466,0.18075017315786668
+"22313: Aircraft instrument, electrical and avionics mechanics, technicians and inspectors",22313,1,1
+30010: Managers in health care,30010,1,1
+31100: Specialists in clinical and laboratory medicine,31100,0.05239669421487603,0.055254804008398925
+31101: Specialists in surgery,31101,0.05239669421487603,0.055254804008398925
+31102: General practitioners and family physicians,31102,1,1
+31103: Veterinarians,31103,0.625,0.8200000000000001
+31110: Dentists,31110,0.25,0.25
+31111: Optometrists,31111,1,1
+31112: Audiologists and speech-language pathologists,31112,0.5,0.5
+31120: Pharmacists,31120,0.5555555555555556,0.6799999999999999
+31121: Dietitians and nutritionists,31121,1,1
+31200: Psychologists,31200,0.20000000000000004,0.20000000000000004
+31201: Chiropractors,31201,1,1
+31202: Physiotherapists,31202,1,1
+31203: Occupational therapists,31203,0.5,0.5
+31204: Kinesiologists and other professional occupations in therapy and assessment,31204,0.20987654320987653,0.22491349480968859
+31209: Other professional occupations in health diagnosing and treating,31209,0.375,0.5
+31300: Nursing coordinators and supervisors,31300,0.20000000000000004,0.20000000000000004
+31301: Registered nurses and registered psychiatric nurses,31301,0.20000000000000004,0.20000000000000004
+31302: Nurse practitioners,31302,0.21875,0.25510204081632654
+"31303: Physician assistants, midwives and allied health professionals",31303,0.06611111111111112,0.07601864275121814
+32100: Opticians,32100,1,1
+32101: Licensed practical nurses,32101,0.5555555555555556,0.6799999999999999
+32102: Paramedical occupations,32102,1,1
+"32103: Respiratory therapists, clinical perfusionists and cardiopulmonary technologists",32103,0.1342155009451796,0.2926006744693513
+32104: Animal health technologists and veterinary technicians,32104,0.5,0.5
+32109: Other technical occupations in therapy and assessment,32109,0.06635802469135801,0.08139534883720931
+32110: Denturists,32110,1,1
+32111: Dental hygienists and dental therapists,32111,1,1
+32112: Dental technologists and technicians,32112,1,1
+32120: Medical laboratory technologists,32120,0.17333333333333337,0.2149901380670612
+32121: Medical radiation technologists,32121,0.20000000000000004,0.20000000000000004
+32122: Medical sonographers,32122,1,1
+32123: Cardiology technologists and electrophysiological diagnostic technologists,32123,0.25925925925925924,0.2925170068027211
+32124: Pharmacy technicians,32124,0.14814814814814814,0.17708333333333334
+32129: Other medical technologists and technicians,32129,0.14814814814814814,0.17708333333333334
+32200: Traditional Chinese medicine practitioners and acupuncturists,32200,0.22448979591836732,0.2892561983471075
+32201: Massage therapists,32201,1,1
+32209: Other practitioners of natural healing,32209,0.22448979591836732,0.2892561983471075
+33100: Dental assistants and dental laboratory assistants,33100,0.6800000000000002,0.8892733564013842
+33101: Medical laboratory assistants and related technical occupations,33101,0.3333333333333333,0.3333333333333333
+"33102: Nurse aides, orderlies and patient service associates",33102,0.26530612244897955,0.2899408284023669
+33103: Pharmacy technical assistants and pharmacy assistants,33103,0.05925925925925926,0.06911458333333333
+33109: Other assisting occupations in support of health services,33109,0.0707070707070707,0.08787316579524372
+40010: Government managers - health and social policy development and program administration,40010,1,1
+"40011: Government managers - economic analysis, policy development and program administration",40011,1,1
+40012: Government managers - education policy development and program administration,40012,1,1
+40019: Other managers in public administration,40019,0.700356718192628,0.9566241305657485
+40020: Administrators - post-secondary education and vocational training,40020,0.8024691358024691,0.9697041420118342
+40021: School principals and administrators of elementary and secondary education,40021,0.59375,0.8988919667590026
+"40030: Managers in social, community and correctional services",40030,0.3600000000000001,0.4074074074074074
+40040: Commissioned police officers and related occupations in public protection services,40040,0.8579881656804735,0.9863020214030915
+40041: Fire chiefs and senior firefighting officers,40041,0.7551020408163265,0.9474068663257851
+40042: Commissioned officers of the Canadian Armed Forces,40042,1,1
+41100: Judges,41100,1,1
+41101: Lawyers and Quebec notaries,41101,1,1
+41200: University professors and lecturers,41200,0.03140978816654493,0.04272579772850188
+41201: Post-secondary teaching and research assistants,41201,0.3333333333333333,0.3333333333333333
+41210: College and other vocational instructors,41210,0.03183673469387755,0.04142011834319526
+41220: Secondary school teachers,41220,0.26530612244897955,0.2899408284023669
+41221: Elementary school and kindergarten teachers,41221,0.14792899408284024,0.1552
+41300: Social workers,41300,0.3333333333333333,0.3333333333333333
+41301: Therapists in counselling and related specialized therapies,41301,0.06965761511216056,0.07636205875628047
+41302: Religious leaders,41302,1,1
+41310: Police investigators and other investigative occupations,41310,0.03478858069860291,0.044726323841911664
+41311: Probation and parole officers,41311,1,1
+41320: Educational counsellors,41320,1,1
+41321: Career development practitioners and career counsellors (except education),41321,0.20000000000000004,0.20000000000000004
+"41400: Natural and applied science policy researchers, consultants and program officers",41400,0.07780612244897958,0.11616500940607362
+41401: Economists and economic policy researchers and analysts,41401,0.5,0.5
+41402: Business development officers and market researchers and analysts,41402,0.5,0.5
+"41403: Social policy researchers, consultants and program officers",41403,0.42857142857142855,0.619047619047619
+"41404: Health policy researchers, consultants and program officers",41404,0.2188365650969529,0.4164396731293062
+"41405: Education policy researchers, consultants and program officers",41405,1,1
+"41406: Recreation, sports and fitness policy researchers, consultants and program officers",41406,0.26530612244897955,0.2899408284023669
+41407: Program officers unique to government,41407,0.5555555555555556,0.6799999999999999
+41409: Other professional occupations in social science,41409,0.19113573407202214,0.21865154379332075
+42100: Police officers (except commissioned),42100,0.19387755102040816,0.22576177285318555
+42101: Firefighters,42101,0.3600000000000001,0.4074074074074074
+42200: Paralegals and related occupations,42200,0.39321832242712673,0.48074823595112165
+42201: Social and community service workers,42201,0.375,0.5
+42202: Early childhood educators and assistants,42202,0.23183391003460205,0.34640231677433725
+42203: Instructors of persons with disabilities,42203,0.5,0.5
+42204: Religion workers,42204,0.5,0.5
+43100: Elementary and secondary school teacher assistants,43100,0.5555555555555556,0.6799999999999999
+43109: Other instructors,43109,0.203125,0.5118343195266272
+43200: Sheriffs and bailiffs,43200,0.31360946745562135,0.5016019935920256
+43201: Correctional service officers,43201,0.5,0.5
+43202: By-law enforcement and other regulatory officers,43202,0.13215400624349635,0.24446648893297787
+"43203: Border services, customs, and immigration officers",43203,0.2421875,0.38761706555671177
+44100: Home child care providers,44100,0.5,0.5
+"44101: Home support workers, caregivers and related occupations",44101,0.5555555555555556,0.6799999999999999
+"45100: Student monitors, crossing guards and related occupations",45100,0.09422936449963479,0.14836848747070489
+"50010: Library, archive, museum and art gallery managers",50010,1,1
+"50011: Managers - publishing, motion pictures, broadcasting and performing arts",50011,1,1
+"50012: Recreation, sports and fitness program and service directors",50012,0.625,0.8200000000000001
+51100: Librarians,51100,1,1
+51101: Conservators and curators,51101,0.5555555555555556,0.6799999999999999
+51102: Archivists,51102,1,1
+51110: Editors,51110,1,1
+51111: Authors and writers (except technical),51111,0.27999999999999997,0.31122448979591844
+51112: Technical writers,51112,0.27999999999999997,0.31122448979591844
+51113: Journalists,51113,1,1
+"51114: Translators, terminologists and interpreters",51114,1,1
+"51120: Producers, directors, choreographers and related occupations",51120,0.1875,0.25
+"51121: Conductors, composers and arrangers",51121,1,1
+51122: Musicians and singers,51122,1,1
+52100: Library and public archive technicians,52100,1,1
+52110: Film and video camera operators,52110,1,1
+52111: Graphic arts technicians,52111,0.375,0.5
+52112: Broadcast technicians,52112,1,1
+52113: Audio and video recording technicians,52113,0.5,0.5
+52114: Announcers and other broadcasters,52114,0.5555555555555556,0.6799999999999999
+"52119: Other technical and coordinating occupations in motion pictures, broadcasting and the performing arts",52119,0.13580246913580246,0.19008264462809918
+52120: Graphic designers and illustrators,52120,0.29591836734693877,0.43816884661117705
+52121: Interior designers and interior decorators,52121,1,1
+"53100: Registrars, restorers, interpreters and other occupations related to museum and art galleries",53100,0.5200000000000001,0.57396449704142
+53110: Photographers,53110,1,1
+"53111: Motion pictures, broadcasting, photography and performing arts assistants and operators",53111,0.375,0.5
+53120: Dancers,53120,1,1
+"53121: Actors, comedians and circus performers",53121,0.5555555555555556,0.6799999999999999
+"53122: Painters, sculptors and other visual artists",53122,1,1
+"53123: Theatre, fashion, exhibit and other creative designers",53123,0.2777777777777778,0.33999999999999997
+53124: Artisans and craftspersons,53124,0.27999999999999997,0.31122448979591844
+"53125: Patternmakers - textile, leather and fur products",53125,1,1
+53200: Athletes,53200,1,1
+53201: Coaches,53201,1,1
+53202: Sports officials and referees,53202,1,1
+"54100: Program leaders and instructors in recreation, sport and fitness",54100,0.3600000000000001,0.4074074074074074
+55109: Other performers,55109,1,1
+60010: Corporate sales managers,60010,1,1
+60020: Retail and wholesale trade managers,60020,0.43195266272189353,0.4865828485644587
+60030: Restaurant and food service managers,60030,1,1
+60031: Accommodation service managers,60031,0.3257023933402705,0.42675744368116453
+60040: Managers in customer and personal services,60040,0.5,0.5
+62010: Retail sales supervisors,62010,0.2345679012345679,0.31855955678670356
+62020: Food service supervisors,62020,1,1
+62021: Executive housekeepers,62021,1,1
+"62022: Accommodation, travel, tourism and related services supervisors",62022,0.625,0.8200000000000001
+62023: Customer and information services supervisors,62023,1,1
+62024: Cleaning supervisors,62024,1,1
+62029: Other services supervisors,62029,0.625,0.8200000000000001
+62100: Technical sales specialists - wholesale trade,62100,0.1900200490086879,0.23914080227154969
+62101: Retail and wholesale buyers,62101,0.5555555555555556,0.6799999999999999
+62200: Chefs,62200,1,1
+62201: Funeral directors and embalmers,62201,0.3333333333333333,0.3333333333333333
+"62202: Jewellers, jewellery and watch repairers and related occupations",62202,0.3333333333333333,0.3333333333333333
+63100: Insurance agents and brokers,63100,0.625,0.8200000000000001
+63101: Real estate agents and salespersons,63101,0.5200000000000001,0.57396449704142
+63102: Financial sales representatives,63102,0.21875,0.25510204081632654
+63200: Cooks,63200,0.25,0.25
+63201: Butchers - retail and wholesale,63201,0.625,0.8200000000000001
+63202: Bakers,63202,1,1
+63210: Hairstylists and barbers,63210,0.5555555555555556,0.6799999999999999
+"63211: Estheticians, electrologists and related occupations",63211,0.26530612244897955,0.2899408284023669
+63220: Shoe repairers and shoemakers,63220,1,1
+63221: Upholsterers,63221,1,1
+64100: Retail salespersons and visual merchandisers,64100,0.20634920634920634,0.32689288733244776
+64101: Sales and account representatives - wholesale trade (non-technical),64101,0.5555555555555556,0.6799999999999999
+"64200: Tailors, dressmakers, furriers and milliners",64200,1,1
+"64201: Image, social and other personal consultants",64201,0.5200000000000001,0.57396449704142
+64300: Maîtres d'hôtel and hosts/hostesses,64300,1,1
+64301: Bartenders,64301,1,1
+64310: Travel counsellors,64310,1,1
+64311: Pursers and flight attendants,64311,0.3125,0.6500000000000001
+64312: Airline ticket and service agents,64312,0.3333333333333333,0.3333333333333333
+"64313: Ground and water transport ticket agents, cargo service representatives and related clerks",64313,0.3333333333333333,0.3333333333333333
+64314: Hotel front desk clerks,64314,0.5,0.5
+64320: Tour and travel guides,64320,0.5200000000000001,0.57396449704142
+64321: Casino workers,64321,0.3333333333333333,0.3333333333333333
+64322: Outdoor sport and recreational guides,64322,0.5200000000000001,0.57396449704142
+64400: Customer services representatives - financial institutions,64400,1,1
+64401: Postal services representatives,64401,0.3333333333333333,0.3333333333333333
+64409: Other customer and information services representatives,64409,0.2157426027003735,0.3773096146992648
+64410: Security guards and related security service occupations,64410,0.10714285714285716,0.1547619047619048
+65100: Cashiers,65100,0.5555555555555556,0.6799999999999999
+65101: Service station attendants,65101,1,1
+"65102: Store shelf stockers, clerks and order fillers",65102,0.5200000000000001,0.57396449704142
+65109: Other sales related occupations,65109,0.3600000000000001,0.4074074074074074
+65200: Food and beverage servers,65200,0.5,0.5
+"65201: Food counter attendants, kitchen helpers and related support occupations",65201,0.16666666666666666,0.16666666666666666
+65202: Meat cutters and fishmongers - retail and wholesale,65202,0.625,0.8200000000000001
+"65210: Support occupations in accommodation, travel and facilities set-up services",65210,0.5,0.5
+"65211: Operators and attendants in amusement, recreation and sport",65211,0.45999999999999996,0.6512287334593574
+65220: Pet groomers and animal care workers,65220,0.625,0.8200000000000001
+65310: Light duty cleaners,65310,0.42857142857142855,0.619047619047619
+65311: Specialized cleaners,65311,0.3333333333333333,0.3333333333333333
+"65312: Janitors, caretakers and heavy-duty cleaners",65312,0.5555555555555556,0.6799999999999999
+"65320: Dry cleaning, laundry and related occupations",65320,0.5,0.5
+65329: Other service support occupations,65329,0.10350981558596077,0.17615437970669837
+70010: Construction managers,70010,1,1
+70011: Home building and renovation managers,70011,1,1
+70012: Facility operation and maintenance managers,70012,0.14968749999999997,0.24872843127427097
+70020: Managers in transportation,70020,0.5,0.5
+70021: Postal and courier services managers,70021,0.8024691358024691,0.9697041420118342
+"72010: Contractors and supervisors, machining, metal forming, shaping and erecting trades and related occupations",72010,0.35185185185185197,0.389196675900277
+"72011: Contractors and supervisors, electrical trades and telecommunications occupations",72011,0.41836734693877564,0.6332540154669839
+"72012: Contractors and supervisors, pipefitting trades",72012,0.5,0.5
+"72013: Contractors and supervisors, carpentry trades",72013,0.5,0.5
+"72014: Contractors and supervisors, other construction trades, installers, repairers and servicers",72014,0.41836734693877564,0.6332540154669839
+"72020: Contractors and supervisors, mechanic trades",72020,1,1
+"72021: Contractors and supervisors, heavy equipment operator crews",72021,0.2109375,0.26954732510288065
+"72022: Supervisors, printing and related occupations",72022,1,1
+"72023: Supervisors, railway transport operations",72023,0.5555555555555556,0.6799999999999999
+"72024: Supervisors, motor transport and other ground transit operators",72024,0.5,0.5
+"72025: Supervisors, mail and message distribution occupations",72025,1,1
+72100: Machinists and machining and tooling inspectors,72100,0.619047619047619,0.8827838827838829
+72101: Tool and die makers,72101,0.3333333333333333,0.3333333333333333
+72102: Sheet metal workers,72102,1,1
+72103: Boilermakers,72103,1,1
+72104: Structural metal and platework fabricators and fitters,72104,0.3600000000000001,0.4074074074074074
+72105: Ironworkers,72105,0.5555555555555556,0.6799999999999999
+72106: Welders and related machine operators,72106,0.5,0.5
+72200: Electricians (except industrial and power system),72200,1,1
+72201: Industrial electricians,72201,0.5,0.5
+72202: Power system electricians,72202,1,1
+72203: Electrical power line and cable workers,72203,0.6800000000000002,0.8892733564013842
+72204: Telecommunications line and cable installers and repairers,72204,1,1
+72205: Telecommunications equipment installation and cable television service technicians,72205,0.42857142857142855,0.619047619047619
+72300: Plumbers,72300,0.5,0.5
+"72301: Steamfitters, pipefitters and sprinkler system installers",72301,0.5,0.5
+72302: Gas fitters,72302,0.3388429752066116,0.35276621058893515
+72310: Carpenters,72310,1,1
+72311: Cabinetmakers,72311,1,1
+72320: Bricklayers,72320,0.3333333333333333,0.3333333333333333
+72321: Insulators,72321,0.5,0.5
+72400: Construction millwrights and industrial mechanics,72400,0.3333333333333333,0.3333333333333333
+72401: Heavy-duty equipment mechanics,72401,0.5555555555555556,0.6799999999999999
+"72402: Heating, refrigeration and air conditioning mechanics",72402,1,1
+72403: Railway carmen/women,72403,1,1
+72404: Aircraft mechanics and aircraft inspectors,72404,0.3333333333333333,0.5833333333333334
+72405: Machine fitters,72405,1,1
+72406: Elevator constructors and mechanics,72406,1,1
+"72410: Automotive service technicians, truck and bus mechanics and mechanical repairers",72410,0.5,0.5
+"72411: Auto body collision, refinishing and glass technicians and damage repair estimators",72411,0.5,0.5
+72420: Oil and solid fuel heating mechanics,72420,1,1
+72421: Appliance servicers and repairers,72421,0.5555555555555556,0.6799999999999999
+72422: Electrical mechanics,72422,1,1
+"72423: Motorcycle, all-terrain vehicle and other related mechanics",72423,0.11901234567901235,0.1719150841066786
+72429: Other small engine and small equipment repairers,72429,1,1
+72500: Crane operators,72500,0.3600000000000001,0.4074074074074074
+72501: Water well drillers,72501,1,1
+"72600: Air pilots, flight engineers and flying instructors",72600,0.3251641995882757,0.5563832874543206
+72601: Air traffic controllers and related occupations,72601,0.5,0.5
+"72602: Deck officers, water transport",72602,1,1
+"72603: Engineer officers, water transport",72603,1,1
+72604: Railway traffic controllers and marine traffic regulators,72604,1,1
+72999: Other technical trades and related occupations,72999,0.18367346938775508,0.19524462734339273
+73100: Concrete finishers,73100,1,1
+73101: Tilesetters,73101,0.5,0.5
+"73102: Plasterers, drywall installers and finishers and lathers",73102,0.3333333333333333,0.3333333333333333
+73110: Roofers and shinglers,73110,1,1
+73111: Glaziers,73111,1,1
+73112: Painters and decorators (except interior decorators),73112,0.5555555555555556,0.6799999999999999
+73113: Floor covering installers,73113,0.3600000000000001,0.4074074074074074
+73200: Residential and commercial installers and servicers,73200,0.13854595336076816,0.15223997647289483
+73201: General building maintenance workers and building superintendents,73201,0.5555555555555556,0.6799999999999999
+73202: Pest controllers and fumigators,73202,1,1
+73209: Other repairers and servicers,73209,0.2037037037037037,0.23553719008264465
+73300: Transport truck drivers,73300,1,1
+"73301: Bus drivers, subway operators and other transit operators",73301,0.26530612244897955,0.2899408284023669
+73310: Railway and yard locomotive engineers,73310,0.5,0.5
+73311: Railway conductors and brakemen/women,73311,0.5,0.5
+73400: Heavy equipment operators,73400,0.20000000000000004,0.20000000000000004
+73401: Printing press operators,73401,1,1
+"73402: Drillers and blasters - surface mining, quarrying and construction",73402,0.5555555555555556,0.6799999999999999
+74100: Mail and parcel sorters and related occupations,74100,0.3333333333333333,0.3333333333333333
+74101: Letter carriers,74101,1,1
+74102: Couriers and messengers,74102,0.26530612244897955,0.2899408284023669
+74200: Railway yard and track maintenance workers,74200,0.5555555555555556,0.6799999999999999
+74201: Water transport deck and engine room crew,74201,1,1
+74202: Air transport ramp attendants,74202,0.26781163434903044,0.552835050443444
+74203: Automotive and heavy truck and equipment parts installers and servicers,74203,0.375,0.5
+74204: Utility maintenance workers,74204,0.16666666666666666,0.16666666666666666
+74205: Public works maintenance equipment operators and related workers,74205,0.25,0.25
+75100: Longshore workers,75100,1,1
+75101: Material handlers,75101,0.14559442589635654,0.232144046425032
+75110: Construction trades helpers and labourers,75110,0.07469443186962427,0.08760330578512397
+75119: Other trades helpers and labourers,75119,0.3333333333333333,0.3333333333333333
+75200: Taxi and limousine drivers and chauffeurs,75200,1,1
+75201: Delivery service drivers and door-to-door distributors,75201,0.26530612244897955,0.2899408284023669
+75210: Boat and cable ferry operators and related occupations,75210,0.3600000000000001,0.4074074074074074
+75211: Railway and motor transport labourers,75211,0.5,0.5
+75212: Public works and maintenance labourers,75212,0.3333333333333333,0.3333333333333333
+80010: Managers in natural resources production and fishing,80010,0.625,0.8200000000000001
+80020: Managers in agriculture,80020,0.6800000000000002,0.8892733564013842
+80021: Managers in horticulture,80021,1,1
+80022: Managers in aquaculture,80022,1,1
+"82010: Supervisors, logging and forestry",82010,1,1
+"82020: Supervisors, mining and quarrying",82020,0.5,0.5
+"82021: Contractors and supervisors, oil and gas drilling and services",82021,0.5,0.5
+82030: Agricultural service contractors and farm supervisors,82030,0.1771700356718193,0.2018377550560786
+"82031: Contractors and supervisors, landscaping, grounds maintenance and horticulture services",82031,1,1
+83100: Underground production and development miners,83100,0.3600000000000001,0.4074074074074074
+"83101: Oil and gas well drillers, servicers, testers and related workers",83101,0.5555555555555556,0.6799999999999999
+83110: Logging machinery operators,83110,1,1
+83120: Fishing masters and officers,83120,1,1
+83121: Fishermen/women,83121,1,1
+84100: Underground mine service and support workers,84100,1,1
+84101: Oil and gas well drilling and related workers and services operators,84101,0.3600000000000001,0.4074074074074074
+84110: Chain saw and skidder operators,84110,0.5555555555555556,0.6799999999999999
+84111: Silviculture and forestry workers,84111,1,1
+84120: Specialized livestock workers and farm machinery operators,84120,0.15994665025135935,0.2199371235570243
+84121: Fishing vessel deckhands,84121,1,1
+85100: Livestock labourers,85100,0.15994665025135935,0.2199371235570243
+85101: Harvesting labourers,85101,0.26530612244897966,0.4021477098400175
+85102: Aquaculture and marine harvest labourers,85102,0.53125,0.6107266435986161
+85103: Nursery and greenhouse labourers,85103,0.6800000000000002,0.8892733564013842
+85104: Trappers and hunters,85104,1,1
+85110: Mine labourers,85110,1,1
+"85111: Oil and gas drilling, servicing and related labourers",85111,1,1
+85121: Landscaping and grounds maintenance labourers,85121,1,1
+90010: Manufacturing managers,90010,0.125,0.16666666666666666
+90011: Utilities managers,90011,0.15850986121256386,0.16515534413557306
+"92010: Supervisors, mineral and metal processing",92010,1,1
+"92011: Supervisors, petroleum, gas and chemical processing and utilities",92011,1,1
+"92012: Supervisors, food and beverage processing",92012,1,1
+"92013: Supervisors, plastic and rubber products manufacturing",92013,1,1
+"92014: Supervisors, forest products processing",92014,1,1
+"92015: Supervisors, textile, fabric, fur and leather products processing and manufacturing",92015,1,1
+"92020: Supervisors, motor vehicle assembling",92020,1,1
+"92021: Supervisors, electronics and electrical products manufacturing",92021,1,1
+"92022: Supervisors, furniture and fixtures manufacturing",92022,1,1
+"92023: Supervisors, other mechanical and metal products manufacturing",92023,1,1
+"92024: Supervisors, other products manufacturing and assembly",92024,1,1
+92100: Power engineers and power systems operators,92100,0.16666666666666666,0.16666666666666666
+92101: Water and waste treatment plant operators,92101,0.5555555555555556,0.6799999999999999
+"93100: Central control and process operators, mineral and metal processing",93100,0.5200000000000001,0.57396449704142
+"93101: Central control and process operators, petroleum, gas and chemical processing",93101,0.20000000000000004,0.20000000000000004
+"93102: Pulping, papermaking and coating control operators",93102,1,1
+93200: Aircraft assemblers and aircraft assembly inspectors,93200,0.7551020408163265,0.9474068663257851
+"94100: Machine operators, mineral and metal processing",94100,0.1771700356718193,0.2018377550560786
+94101: Foundry workers,94101,0.29591836734693877,0.43816884661117705
+94102: Glass forming and finishing machine operators and glass cutters,94102,0.1124567474048443,0.11562130177514794
+"94103: Concrete, clay and stone forming operators",94103,0.23407202216066486,0.3689121529358216
+"94104: Inspectors and testers, mineral and metal processing",94104,1,1
+94105: Metalworking and forging machine operators,94105,0.32799999999999996,0.5322784057108865
+94106: Machining tool operators,94106,0.1606805293005671,0.17951557093425605
+94107: Machine operators of other metal products,94107,1,1
+94110: Chemical plant machine operators,94110,0.34375,0.5661157024793388
+94111: Plastics processing machine operators,94111,0.20233747260774282,0.32531376663321554
+94112: Rubber processing machine operators and related workers,94112,0.12007281383462859,0.2412449461250556
+94120: Sawmill machine operators,94120,1,1
+"94121: Pulp mill, papermaking and finishing machine operators",94121,0.2686980609418283,0.31129769369752364
+94122: Paper converting machine operators,94122,1,1
+94123: Lumber graders and other wood processing inspectors and graders,94123,0.8892733564013842,0.9922481793819737
+94124: Woodworking machine operators,94124,0.2686980609418283,0.31129769369752364
+94129: Other wood processing machine operators,94129,0.36094674556213024,0.43886052136522435
+"94130: Textile fibre and yarn, hide and pelt processing machine operators and workers",94130,0.4055784884842406,0.48639909157870787
+"94131: Weavers, knitters and other fabric making occupations",94131,1,1
+94132: Industrial sewing machine operators,94132,0.5,0.5
+"94133: Inspectors and graders, textile, fabric, fur and leather products manufacturing",94133,1,1
+"94140: Process control and machine operators, food and beverage processing",94140,0.09948474038842647,0.15370655492240862
+"94141: Industrial butchers and meat cutters, poultry preparers and related workers",94141,0.625,0.8200000000000001
+94142: Fish and seafood plant workers,94142,0.45999999999999996,0.6512287334593574
+"94143: Testers and graders, food and beverage processing",94143,1,1
+94150: Plateless printing equipment operators,94150,1,1
+"94151: Camera, platemaking and other prepress occupations",94151,0.34375,0.36776859504132237
+94152: Binding and finishing machine operators,94152,1,1
+94153: Photographic and film processors,94153,1,1
+"94200: Motor vehicle assemblers, inspectors and testers",94200,0.6828497558172938,0.9402604790085324
+"94201: Electronics assemblers, fabricators, inspectors and testers",94201,0.619047619047619,0.8827838827838829
+"94202: Assemblers and inspectors, electrical appliance, apparatus and equipment manufacturing",94202,0.35898596650067915,0.5672092982576102
+"94203: Assemblers, fabricators and inspectors, industrial electrical motors and transformers",94203,0.31001979451409173,0.529376832270536
+94204: Mechanical assemblers and inspectors,94204,0.4513031550068587,0.6440535471771325
+"94205: Machine operators and inspectors, electrical apparatus manufacturing",94205,0.6800000000000002,0.8892733564013842
+"94210: Furniture and fixture assemblers, finishers, refinishers and inspectors",94210,0.5136000000000001,0.6757795440649839
+94211: Assemblers and inspectors of other wood products,94211,1,1
+"94212: Plastic products assemblers, finishers and inspectors",94212,0.6033057851239669,0.7838243572902985
+"94213: Industrial painters, coaters and metal finishing process operators",94213,0.5,0.5
+"94219: Other products assemblers, finishers and inspectors",94219,0.3890909090909091,0.4792283998963423
+95100: Labourers in mineral and metal processing,95100,0.5017301038062284,0.5068727705112961
+95101: Labourers in metal fabrication,95101,0.5017301038062284,0.5068727705112961
+95102: Labourers in chemical products processing and utilities,95102,0.24327736396919578,0.4869945539433754
+"95103: Labourers in wood, pulp and paper processing",95103,0.5017301038062284,0.5068727705112961
+95104: Labourers in rubber and plastic products manufacturing,95104,0.5017301038062284,0.5068727705112961
+95105: Labourers in textile processing and cutting,95105,0.26926626487653377,0.4343993838805711
+95106: Labourers in food and beverage processing,95106,0.5017301038062284,0.5068727705112961
+95107: Labourers in fish and seafood processing,95107,0.625,0.8200000000000001
+"95109: Other labourers in processing, manufacturing and utilities",95109,0.4289113622843545,0.6587264182702018

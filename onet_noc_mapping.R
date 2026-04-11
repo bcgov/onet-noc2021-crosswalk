@@ -1,24 +1,44 @@
-VERSION <- "1.0.0"
+VERSION <- "2.0.0"
+
 # Build weighted O*NET 2019 -> NOC 2021 mapping
 
 # ------------------------------------------------------------------
 # User choices
 # ------------------------------------------------------------------
 
-cumulative_skill_weight_cutoff <- 0.8
-herf_cut <- 1 / 6
+gt_one <- 2 # what power to raise noc weights to (to reduce influence of small weights)
 
+#----------------------------------------------------------
+#libraries
+#-----------------------------------------------------
 suppressPackageStartupMessages({
-  library(dplyr)
-  library(tidyr)
-  library(purrr)
-  library(readr)
+  library(tidyverse)
   library(readxl)
   library(stringr)
+  library(janitor)
 })
-
+#------------------------------------------------
+#constants
+#-----------------------------------------------
 out_dir <- paste0("output/",VERSION)
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+#--------------------------------------------------
+#functions
+#-----------------------------------------------------
+
+read_data <- function(file_name, category){
+  read_excel(file_name)%>%
+    clean_names()%>%
+    select(o_net_soc_code, element_name, scale_name, data_value)%>%
+    pivot_wider(names_from = scale_name, values_from = data_value)%>%
+    mutate(Importance=10*(Importance-1)/4, # put level and importance on same 0-10 support
+           Level=10*Level/7, # put level and importance on same 0-10 support
+           score=sqrt(Importance*Level), # geometric mean of importance and level
+           category=category
+           )%>%
+    unite(element_name, category, element_name, sep=": ")%>%
+    select(-Importance, -Level)
+}
 
 # ------------------------------------------------------------------
 # O*NET skill, knowledge, ability, work activities available
@@ -56,11 +76,18 @@ onet_paths <- file_lookup |>
 stopifnot(!any(duplicated(file_lookup$clean[file_lookup$clean %in% expected])))
 stopifnot(length(onet_paths) == length(expected))
 
-data_available <- tibble(path = onet_paths) |>
-  mutate(data = map(path, read_excel)) |>
-  select(-path) |>
-  unnest(data) |>
-  transmute(onet_soc_code=`O*NET-SOC Code`)|>
+# read in onet data
+
+onet_data <- file_lookup|>
+  mutate(category=sub("\\.xlsx$", "", clean))%>%
+  mutate(data=map2(path, category, read_data))%>%
+  select(-path)%>%
+  unnest(data)%>%
+  rename(onet_soc_code=o_net_soc_code)|>
+  pivot_wider(id_cols = onet_soc_code, names_from = element_name, values_from = score)
+
+data_available <- onet_data|>
+  select(onet_soc_code)|>
   distinct()
 
 # ------------------------------------------------------------------
@@ -76,12 +103,15 @@ stopifnot(length(onet_2019_to_soc_2018_path) == 1)
 onet_2019_to_soc_2018 <- read_excel(onet_2019_to_soc_2018_path,
                                     skip = 3)|>
   transmute(onet_soc_code=`O*NET-SOC 2019 Code`,
+            onet_title=`O*NET-SOC 2019 Title`,
             soc_2018=`2018 SOC Code`)|>
   semi_join(data_available, by = join_by(onet_soc_code))|>
+  unite(onet_plus_title, onet_soc_code, onet_title, sep=": ", remove = FALSE)|>
   distinct()|> #make sure no duplicates
-  group_by(onet_soc_code) |>
+  group_by(onet_soc_code, onet_plus_title)|>
   mutate(w_1 = 1 / n_distinct(soc_2018)) |> #path weights if 1:many
-  ungroup()
+  ungroup()|>
+  select(-onet_title)
 
 # ------------------------------------------------------------------
 # Step 2: SOC 2018 -> NOC 2016
@@ -131,7 +161,8 @@ noc_2016_to_noc_2021 <- read_csv(noc_2016_to_noc_2021_path)|>
   group_by(noc_2016) |>
   mutate(w_3 = 1 / n_distinct(noc_2021)) |> #path weights for 1:many
   ungroup() |>
-  unite(noc_plus_title, noc_2021, noc2021_title, sep = ": ", remove = FALSE)
+  unite(noc_plus_title, noc_2021, noc2021_title, sep = ": ", remove = FALSE)|>
+  select(-noc2021_title)
 
 # ------------------------------------------------------------------
 # Input integrity checks
@@ -175,10 +206,10 @@ onet_to_noc2021_paths <- onet_2019_to_soc_2018 |>
   mutate(path_weight = w_1 * w_2 * w_3) |>
   select(
     onet_soc_code,
+    onet_plus_title,
     soc_2018,
     noc_2016,
     noc_2021,
-    noc2021_title,
     noc_plus_title,
     w_1,
     w_2,
@@ -188,64 +219,43 @@ onet_to_noc2021_paths <- onet_2019_to_soc_2018 |>
   arrange(noc_plus_title, desc(path_weight))
 
 # ------------------------------------------------------------------
-# Untrimmed mapping
+# mapping
 # ------------------------------------------------------------------
 
-mapping_untrimmed <- onet_to_noc2021_paths |>
-  group_by(onet_soc_code, noc_plus_title, noc_2021, noc2021_title) |>
+mapping <- onet_to_noc2021_paths |>
+  group_by(onet_soc_code, onet_plus_title, noc_2021, noc_plus_title) |>
   summarise(onet_weight = sum(path_weight), .groups = "drop") |>
-  group_by(noc_plus_title, noc_2021, noc2021_title) |>
-  mutate(noc_weight = onet_weight / sum(onet_weight)) |>
-  ungroup()|>
-  arrange(noc_2021, desc(noc_weight), onet_soc_code)
-
-# ------------------------------------------------------------------
-# Trim low-weight noise, and then normalize within NOC 2021:
-# noc_weight reflects the relative contribution of O*NET occupations
-# to each NOC (not a forward probability from O*NET to NOC).
-# ------------------------------------------------------------------
-
-mapping_trimmed <- mapping_untrimmed |>
-  group_by(noc_plus_title, noc_2021, noc2021_title) |>
-  arrange(desc(noc_weight), .by_group = TRUE) |>
-  mutate(cum_weight = cumsum(noc_weight),
-         cutoff_index = match(TRUE, cum_weight >= cumulative_skill_weight_cutoff),
-         cutoff_index = if_else(is.na(cutoff_index), dplyr::n(), cutoff_index),
-         cutoff_weight = noc_weight[cutoff_index]
+  group_by(noc_plus_title, noc_2021) |>
+  mutate(base_weight = onet_weight / sum(onet_weight),
+         down_weight = base_weight^gt_one,
+         down_weight = down_weight/ sum(down_weight)
          )|>
-  select(-cutoff_index)|>
-  filter(noc_weight >= cutoff_weight | row_number() == 1) |> #Ensures at least one O*NET occupation is retained
-  mutate(noc_weight = noc_weight / sum(noc_weight)) |>
   ungroup()|>
-  arrange(noc_2021, desc(noc_weight), onet_soc_code)
+  arrange(noc_2021, desc(base_weight), onet_soc_code)
 
 # ------------------------------------------------------------------
 # Mapping strength
 # ------------------------------------------------------------------
 
-mapping_strength <- mapping_trimmed |>
-  group_by(noc_plus_title, noc_2021, noc2021_title) |>
-  summarise(herf_score = sum(noc_weight^2), .groups = "drop") |>
-  mutate(herf_cat = if_else(herf_score < herf_cut, "weak", "strong"))|>
+mapping_strength <- mapping |>
+  group_by(noc_plus_title, noc_2021) |>
+  summarise(base_herf = sum(base_weight^2),
+            down_herf = sum(down_weight^2), .groups = "drop") |>
   arrange(noc_2021)
 
 # ------------------------------------------------------------------
 # Write outputs
 # ------------------------------------------------------------------
-
+write_csv(onet_data, file.path(out_dir, "onet_data.csv"))
 write_csv(onet_to_noc2021_paths, file.path(out_dir, "onet_to_noc2021_paths.csv"))
-write_csv(mapping_untrimmed, file.path(out_dir, "onet_to_noc2021_mapping_untrimmed.csv"))
-write_csv(mapping_trimmed, file.path(out_dir, "onet_to_noc2021_mapping_trimmed.csv"))
+write_csv(mapping, file.path(out_dir, "onet_to_noc2021_mapping.csv"))
 write_csv(mapping_strength, file.path(out_dir, "onet_to_noc2021_mapping_strength.csv"))
 
 metadata_lines <- c(
   sprintf("Run timestamp: %s", Sys.time()),
-  sprintf("cumulative_skill_weight_cutoff: %s", cumulative_skill_weight_cutoff),
-  sprintf("herf_cut: %s", herf_cut),
   sprintf("n_paths: %s", nrow(onet_to_noc2021_paths)),
-  sprintf("n_untrimmed_rows: %s", nrow(mapping_untrimmed)),
-  sprintf("n_trimmed_rows: %s", nrow(mapping_trimmed)),
-  sprintf("n_noc2021: %s", n_distinct(mapping_trimmed$noc_plus_title)),
+  sprintf("n_mapping_rows: %s", nrow(mapping)),
+  sprintf("n_noc2021: %s", n_distinct(mapping$noc_plus_title)),
   sprintf("version: %s", VERSION)
 )
 writeLines(metadata_lines, file.path(out_dir, "run_metadata.txt"))
