@@ -239,7 +239,7 @@ Interpretation:
 
 We represent each O\*NET occupation as a point in a reduced skill space (using the first 10 principal components), and for each NOC we compute a weighted centroid of these points using the mapping weights. This centroid can be interpreted as the “average” skill profile implied by the mapping. We then measure how far each contributing O*NET occupation lies from this centroid and take a weighted average of those distances. The resulting statistic captures the coherence of the mapping in skill space: low values indicate that the mapped occupations form a tight, internally consistent cluster, while high values indicate that the NOC is being represented by a set of occupations with very different skill profiles.
 
-As a final step, we convert the above into a rank-based similarity measure. Specifically, we take the percentile rank and invert it so that higher values correspond to tighter clustering in skill space. A small positive offset is applied to avoid a zero lower bound. We refer to this as scaled similarity. The diagnostic table is then ordered by the product of the Herfindahl index and scaled similarity, which favors mappings that are both concentrated and internally coherent.
+As a final step, we convert the above into normalized similarity measure with the same support as the Herfindahl index. Specifically, we take the distances, divide by their maximal value, multiply by .95, and then subtract from 1. We refer to this as scaled similarity. The diagnostic table is then ordered by the product of the Herfindahl index and scaled similarity, favoring mappings that are both concentrated and internally coherent.
 
 ---
 

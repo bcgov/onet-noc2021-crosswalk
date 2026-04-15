@@ -135,10 +135,6 @@ Dispersion measures how tightly the mapped O*NET occupations cluster in skill sp
 - Low dispersion → occupations are similar → a single skill profile is representative  
 - High dispersion → occupations are heterogeneous → a single profile is misleading  
 
-Formally:
-
-D = Σ w_i · ||x_i − μ||
-
 ---
 
 ### 3. Share of weights reallocated

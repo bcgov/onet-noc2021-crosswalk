@@ -334,8 +334,8 @@ diagnostics <- mapping_with_diagnostics |>
     .groups = "drop"
   )|>
   mutate(
-   `Scaled Similarity` = 1.05-percent_rank(`Distance from centroid`),
-    sort_score = `Scaled Similarity`*`Herfindahl Index`
+   `Scaled Similarity` = 1 - .95*`Distance from centroid`/max(`Distance from centroid`), #prevent 0s, similar support to Herfindahl
+    sort_score = `Scaled Similarity`*`Herfindahl Index` 
   )|>
   arrange(sort_score)
 
