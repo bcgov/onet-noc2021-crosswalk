@@ -1,35 +1,64 @@
-# O*NET 2019 → NOC 2021 Crosswalk V2.0.0
+# O*NET 2019 → NOC 2021 Crosswalk V3.0.0
 
-A reproducible mapping from **O*NET-SOC 2019** occupations to **NOC 2021** that:
+A reproducible mapping from O\*NET-SOC 2019 occupations to NOC 2021 that:
 
-- assigns **weights** to many-to-many mappings  
-- **downweights low-weight occupations** (noise reduction)  
-- provides a **measure of mapping quality** (Herfindahl index)
+- assigns weights to many-to-many mappings  
+- downweights low-weight occupations (noise reduction)  
+- provides measures of mapping quality (concentration, dispersion, and sensitivity)
 
-This is a **data product**, not an R package.
+This is a data product, not an R package.
 
 ---
 
 ## Why not “just use OaSIS”?
 
-OaSIS provides a **single curated skill profile per NOC**.
+OaSIS provides a high-quality, curated mapping between occupations and skill descriptors, and is an important resource for applied labour market analysis in Canada.
 
-This project does something different:
+This project is not intended to replace OaSIS. Instead, it addresses a different problem.
 
-> It represents each NOC as a distribution over O*NET occupations, and tells you how reliable that mapping is.
+> It represents each NOC as a distribution over O*NET occupations, and makes mapping uncertainty explicit.
+
+### Different objective
+
+OaSIS is designed as a general-purpose, expert-informed mapping.
+
+In contrast, this project is designed for applications where:
+
+- occupations must be embedded in a continuous skill space, and  
+- distances between occupations play a central role (e.g., modeling mobility or substitution)
+
+These use cases place particular demands on the mapping that are not the primary focus of OaSIS.
+
+---
+
+### Many-to-many mappings and hidden uncertainty
+
+Mapping between O*NET occupations and NOC occupations is inherently many-to-many.
+
+In such settings, a single point mapping can obscure important structure:
+
+- Some NOCs map to a small number of very similar O*NET occupations  
+- Others map to many occupations with diverse skill profiles
+
+These cases are qualitatively different, but are often treated identically in standard mappings.
+
+This project makes that distinction explicit.
+
+---
 
 ### Comparison
 
-| Feature | OaSIS | This project |
-|--------|------|-------------|
-| Output | One skill profile per NOC | Distribution over O*NET occupations |
-| Mapping | Internal / opaque | Explicit and reproducible |
-| Uncertainty | Not reported | Quantified (Herfindahl index) |
-| Flexibility | Fixed | Tunable  |
+| Dimension      | OaSIS                         | This project                            |
+|:----------------|:-------------------------------|:-----------------------------------------|
+| Representation | Single profile per NOC        | Distribution over O*NET occupations     |
+| Construction   | Expert-informed              | Algorithmic, reproducible               |
+| Transparency   | Limited                      | Full                                    |
+| Uncertainty    | Not reported                 | Explicitly quantified                   |
+| Tunability     | Fixed                        | User-adjustable                         |
 
-OaSIS effectively **resolves mapping internally**.
+OaSIS effectively resolves mapping internally.
 
-This project **exposes the mapping and measures its ambiguity**.
+This project exposes the mapping and measures its ambiguity.
 
 ---
 
@@ -37,17 +66,17 @@ This project **exposes the mapping and measures its ambiguity**.
 
 Running the build script produces:
 
-- **`onet_to_noc2021_paths.csv`**  
-  All admissible mapping paths and weights
+- `onet_to_noc2021_paths.csv`  
+  All admissible mapping paths with path weights
 
-- **`onet_to_noc2021_mapping.csv`**  
-  Full mapping (can be noisy)
+- `onet_to_noc2021_mapping.csv`  
+  Aggregated NOC-level weights over O*NET occupations
 
-- **`onet_to_noc2021_mapping_strength.csv`** 
-  Mapping quality (Herfindahl index)
-  
-- **`onet_data.csv`**
-  Rescaled ONET skills, abilities, knowledge, and work activities
+- `diagnostics.csv`  
+  Measures of mapping quality for each NOC, including:
+  - concentration (Herfindahl index)
+  - dispersion in skill space
+  - sensitivity to down-weighting
 
 ---
 
@@ -56,6 +85,8 @@ Running the build script produces:
 The mapping answers:
 
 > For a given NOC 2021 occupation, which O*NET occupations contribute skill content, and with what weights?
+
+This allows each NOC to be evaluated not just by its mapped skill profile, but by how reliably that profile represents the underlying occupations.
 
 ---
 
@@ -69,135 +100,63 @@ Mapping chain:
 
 ### Weighting
 
-At each step, one-to-many splits receive equal weight:
+Each one-to-many mapping is split evenly:
 
-```
 w = 1 / n_targets
-```
 
-Path weights are multiplied:
+Path weights are the product of weights across stages:
 
-```
 path_weight = w1 × w2 × w3
-```
-
-Then aggregated to O*NET–NOC pairs.
 
 ---
 
-## Down weighting
+## Down-weighting
 
-Base weights are squared (the default) and then renormalized to downweight small
-contributors.
+Base weights are raised to a power (default = 2) and renormalized.
+
+This reduces the influence of small-weight (noisy) mappings.
 
 ---
 
 ## Mapping quality
 
-For each NOC:
+### 1. Herfindahl index (concentration)
 
-```
-H = Σ noc_weight²
-```
+H = Σ w_i²
 
-- **High H** → concentrated (clean mapping)  
-- **Low H** → diffuse (ambiguous mapping)
+Higher values indicate more concentrated mappings.
 
-This lets you:
+---
 
-- filter unreliable mappings  
-- run sensitivity checks  
-- interpret results more cautiously  
+### 2. Dispersion in skill space
+
+Dispersion measures how tightly the mapped O*NET occupations cluster in skill space.
+
+- Low dispersion → occupations are similar → a single skill profile is representative  
+- High dispersion → occupations are heterogeneous → a single profile is misleading  
+
+Formally:
+
+D = Σ w_i · ||x_i − μ||
+
+---
+
+### 3. Share of weights reallocated
+
+Measures how much the mapping changes under down-weighting.
 
 ---
 
 ## How to use
 
 ```r
-
-mapping <- readr::read_csv("https://raw.githubusercontent.com/bcgov/onet-noc2021-crosswalk/main/output/2.0.0/onet_to_noc2021_mapping.csv")
-
-strength <- readr::read_csv("https://raw.githubusercontent.com/bcgov/onet-noc2021-crosswalk/main/output/2.0.0/onet_to_noc2021_mapping_strength.csv")
-
-```
-
-Note: above URLs point to version 2.0.0. (future changes likely)
-
----
-
-## Build from scratch
-
-Clone from github and 
-
-```r
-source("onet_noc_mapping.R")
-```
-
-which allows you to choose tuning parameters
-
-```r
-gt_one = 2
-```
-
-- `gt_one`: the power to raise base weights (should be greater than 1)
-
----
-
-## Key assumptions
-
-- equal weighting within one-to-many links  
-- weights reflect **structure of concordances**, not observed flows  
-- senior manager NOCs are collapsed (`00011–00015 → 00018`)  
-
----
-
-## Caveats
-
-- constructed concordance (not official)  
-- equal weights are mechanical  
-- depends on crosswalk chain quality  
-- choice of `gt_one` requires judgement   
-
----
-
-## Validation and use in practice
-
-The Herfindahl index provides a simple diagnostic of mapping quality.
-
-- High values indicate that a NOC is largely associated with a small number of O*NET occupations  
-- Low values indicate diffuse mappings and greater ambiguity  
-
-In practice, this matters:
-
-- Low-H occupations tend to behave like noisy measurements  
-- High-H occupations behave more like well-measured constructs  
-
-This makes it straightforward to:
-
-- filter weak mappings  
-- check robustness across mapping quality  
-- identify where crosswalk-based skill measures are likely to break down  
-
----
-
-## Repository structure
-
-```
-onet-to-noc2021-crosswalk/
-├── onet_noc_mapping.R
-├── data-raw/
-├── output/
-└── README.md
+mapping <- readr::read_csv(
+  "https://raw.githubusercontent.com/bcgov/onet-noc2021-crosswalk/main/output/3.0.0/onet_to_noc2021_mapping.csv"
+)
 ```
 
 ---
 
 ## Citation
 
-> Martin, Richard. 2026. *O*NET 2019 to NOC 2021 Crosswalk*. GitHub.
-
----
-
-## License
-
-Apache
+> "Transparent O*NET (2019) to NOC (2021) mapping", Martin, Richard. 2026.

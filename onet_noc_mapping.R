@@ -1,30 +1,33 @@
-VERSION <- "2.0.0"
+VERSION <- "3.0.0"
 
-# Build weighted O*NET 2019 -> NOC 2021 mapping
+# Builds weighted O*NET 2019 -> NOC 2021 mapping
 
-# ------------------------------------------------------------------
-# User choices
-# ------------------------------------------------------------------
+# User choices-------------------------
 
-gt_one <- 2 # what power to raise noc weights to (to reduce influence of small weights)
+gt_one <- 2 # power on noc weights (reduces influence of small weights)
 
-#----------------------------------------------------------
-#libraries
-#-----------------------------------------------------
+#libraries----------------------
+
 suppressPackageStartupMessages({
   library(tidyverse)
   library(readxl)
-  library(stringr)
   library(janitor)
-})
-#------------------------------------------------
-#constants
-#-----------------------------------------------
+  library(conflicted)
+  })
+
+conflicts_prefer(
+  dplyr::filter,
+  dplyr::select,
+  dplyr::mutate,
+  dplyr::summarise,
+  dplyr::arrange)
+
+#constants--------------------------------
+
 out_dir <- paste0("output/",VERSION)
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
-#--------------------------------------------------
-#functions
-#-----------------------------------------------------
+
+#functions------------------------------------
 
 read_data <- function(file_name, category){
   read_excel(file_name)%>%
@@ -40,11 +43,27 @@ read_data <- function(file_name, category){
     select(-Importance, -Level)
 }
 
-# ------------------------------------------------------------------
-# O*NET skill, knowledge, ability, work activities available
-# ------------------------------------------------------------------
+calc_mapping_dispersion <- function(tbl_noc, weight, pc_cols = paste0("PC", 1:10)) {
+  centroid <- tbl_noc |>
+    summarise(across(all_of(pc_cols), ~ sum(.x * {{ weight }})))
+  tbl_noc |>
+    mutate(
+      dist_to_centroid = sqrt(
+        rowSums(
+          (across(all_of(pc_cols)) - as.numeric(centroid[1, pc_cols]))^2
+        )
+      )
+    ) |>
+    summarise(
+      weighted_avg_dist = sum({{ weight }} * dist_to_centroid)
+    ) |>
+    pull(weighted_avg_dist)
+}
 
-onet_dir <- "data-raw/onet_files/"
+
+# O*NET skill, knowledge, ability, work activities-------
+
+onet_dir <- "data-raw/onet_files"
 
 files <- list.files(onet_dir, full.names = TRUE)
 
@@ -67,32 +86,91 @@ expected <- c(
 )
 
 # Match
-onet_paths <- file_lookup |>
-  filter(clean %in% expected) |>
-  arrange(match(clean, expected)) |>
-  pull(path)
+matched_files <- file_lookup |>
+  filter(clean %in% expected)
 
 # Safety checks
-stopifnot(!any(duplicated(file_lookup$clean[file_lookup$clean %in% expected])))
-stopifnot(length(onet_paths) == length(expected))
+# 1. No expected file should appear more than once after cleaning names
+dup_expected <- matched_files |>
+  count(clean, name = "n") |>
+  filter(n > 1)
 
-# read in onet data
+if (nrow(dup_expected) > 0) {
+  stop(
+    paste0(
+      "Duplicate O*NET input files found after cleaning names: ",
+      paste(dup_expected$clean, collapse = ", ")
+    )
+  )
+}
 
-onet_data <- file_lookup|>
+# 2. All expected files must be present
+missing_expected <- setdiff(expected, matched_files$clean)
+
+if (length(missing_expected) > 0) {
+  stop(
+    paste0(
+      "Missing required O*NET input files: ",
+      paste(missing_expected, collapse = ", ")
+    )
+  )
+}
+
+# 3. Keep only the validated files, in the intended order
+onet_files <- matched_files |>
+  mutate(clean = factor(clean, levels = expected)) |>
+  arrange(clean)
+
+# read in onet data---------------------------------------------
+
+onet_data <- onet_files|>
   mutate(category=sub("\\.xlsx$", "", clean))%>%
   mutate(data=map2(path, category, read_data))%>%
   select(-path)%>%
   unnest(data)%>%
   rename(onet_soc_code=o_net_soc_code)|>
-  pivot_wider(id_cols = onet_soc_code, names_from = element_name, values_from = score)
+  pivot_wider(id_cols = onet_soc_code, names_from = element_name, values_from = score)|>
+  column_to_rownames("onet_soc_code")|>
+  as.matrix()
 
-data_available <- onet_data|>
-  select(onet_soc_code)|>
-  distinct()
+data_available <- tibble(onet_soc_code=rownames(onet_data))
 
-# ------------------------------------------------------------------
-# Step 1: O*NET 2019 -> SOC 2018
-# ------------------------------------------------------------------
+onet_prcomp <- onet_data|>
+  prcomp(center = TRUE, scale. = TRUE)
+
+# D_full_vec <- scale(onet_data, center = onet_prcomp$center, scale = onet_prcomp$scale)|>
+#   dist()|>
+#   as.vector()
+# max_k <- ncol(onet_prcomp$x)
+# 
+# k_vs_spearman <- map_dfr(1:max_k, function(k) {
+#   X_k <- onet_prcomp$x[, 1:k, drop = FALSE] #keep as a matrix even if k=1
+#   D_k <- dist(X_k)
+#   D_k_vec <- as.vector(D_k)
+#   
+#   tibble(
+#     k = k,
+#     spearman = cor(D_full_vec, D_k_vec, method = "spearman")
+#   )
+# }
+# )
+# 
+# ggplot(k_vs_spearman, aes(x = k, y = spearman)) +
+#   geom_hline(yintercept = .99, lty=2)+
+#   geom_line() +
+#   geom_point() +
+#   scale_x_continuous(trans="log10")+
+#   labs(title="We retain the minimum number of PCs (10) required to achieve ≥0.99 rank preservation of pairwise distances.",
+#        y = "Spearman correlation (distance ranks)",
+#        x = "Number of PCs")
+
+onet_prcomp10 <- onet_prcomp$x[,1:10]|>
+  as.data.frame()|>
+  rownames_to_column("onet_soc_code")
+
+
+# Step 1: O*NET 2019 -> SOC 2018--------------------------------------
+
 
 onet_2019_to_soc_2018_path <- list.files("data-raw/crosswalks",
                                          pattern="2019_to_SOC_Crosswalk.xlsx",
@@ -113,9 +191,7 @@ onet_2019_to_soc_2018 <- read_excel(onet_2019_to_soc_2018_path,
   ungroup()|>
   select(-onet_title)
 
-# ------------------------------------------------------------------
-# Step 2: SOC 2018 -> NOC 2016
-# ------------------------------------------------------------------
+# Step 2: SOC 2018 -> NOC 2016----------------------------------------
 
 soc_2018_to_noc_2016_path <- list.files("data-raw/crosswalks",
                                          pattern="noc2016v1_3-soc2018us-eng.csv",
@@ -131,9 +207,7 @@ soc_2018_to_noc_2016 <- read_csv(soc_2018_to_noc_2016_path)|>
   mutate(w_2 = 1 / n_distinct(noc_2016)) |> #path weights for 1:many
   ungroup()
 
-# ------------------------------------------------------------------
-# Step 3: NOC 2016 -> NOC 2021
-# ------------------------------------------------------------------
+# Step 3: NOC 2016 -> NOC 2021-----------------------------------------
 
 noc_2016_to_noc_2021_path <- list.files("data-raw/crosswalks",
                                         pattern="noc2016v1_3-noc2021v1_0-eng.csv",
@@ -164,17 +238,17 @@ noc_2016_to_noc_2021 <- read_csv(noc_2016_to_noc_2021_path)|>
   unite(noc_plus_title, noc_2021, noc2021_title, sep = ": ", remove = FALSE)|>
   select(-noc2021_title)
 
-# ------------------------------------------------------------------
-# Input integrity checks
-# ------------------------------------------------------------------
-# Many-to-many joins are inherent to the crosswalk structure,
-# but we do NOT allow duplicate key-pairs within any crosswalk.
-# if duplicate pairs exist, joins will multiply rows for the wrong reason
-# (data duplication rather than genuine branching), which will bias the
-# constructed path weights.
-#
-# These checks ensure that all row expansion in subsequent joins reflects
-# real mapping structure, not input data errors.
+
+# Input integrity checks------------------------------------
+
+#' Many-to-many joins are inherent to the crosswalk structure,
+#' but we do NOT allow duplicate key-pairs within any crosswalk.
+#' if duplicate pairs exist, joins will multiply rows for the wrong reason
+#' (data duplication rather than genuine branching), which will bias the
+#' constructed path weights.
+#' 
+#' These checks ensure that all row expansion in subsequent joins reflects
+#' real mapping structure, not input data errors.
 
 dup_onet_soc <- onet_2019_to_soc_2018 |>
   count(onet_soc_code, soc_2018) |>
@@ -192,18 +266,20 @@ if (nrow(dup_onet_soc) > 0) stop("Duplicate onet_soc_code-soc_2018 pairs found."
 if (nrow(dup_soc_noc2016) > 0) stop("Duplicate soc_2018-noc_2016 pairs found.")
 if (nrow(dup_noc2016_noc2021) > 0) stop("Duplicate noc_2016-noc_2021 pairs found.")
 
-# ------------------------------------------------------------------
-# All paths
-# ------------------------------------------------------------------
 
-# NOTE: a many-to-many relationship is expected:
-# We keep all admissible paths and assign path weights as the product
-# of equal-split weights at each stage.
+# All paths---------------------------------------
+
+#' NOTE: a many-to-many relationship is expected:
+#'  We keep all admissible paths and assign path weights as the product
+#'  of equal-split weights at each stage.
 
 onet_to_noc2021_paths <- onet_2019_to_soc_2018 |>
   left_join(soc_2018_to_noc_2016, by = "soc_2018", relationship = "many-to-many") |>
   left_join(noc_2016_to_noc_2021, by = "noc_2016", relationship = "many-to-many") |>
-  mutate(path_weight = w_1 * w_2 * w_3) |>
+  group_by(noc_plus_title)|>
+  mutate(path_weight = w_1 * w_2 * w_3,
+         equal_weight=1/n()
+         ) |>
   select(
     onet_soc_code,
     onet_plus_title,
@@ -214,46 +290,64 @@ onet_to_noc2021_paths <- onet_2019_to_soc_2018 |>
     w_1,
     w_2,
     w_3,
-    path_weight
+    path_weight,
+    equal_weight
   )|>
   arrange(noc_plus_title, desc(path_weight))
 
-# ------------------------------------------------------------------
-# mapping
-# ------------------------------------------------------------------
+# mapping----------------------------------------
 
 mapping <- onet_to_noc2021_paths |>
   group_by(onet_soc_code, onet_plus_title, noc_2021, noc_plus_title) |>
-  summarise(onet_weight = sum(path_weight), .groups = "drop") |>
+  summarise(path_weight = sum(path_weight),
+            equal_weight= sum(equal_weight),
+            )|>
   group_by(noc_plus_title, noc_2021) |>
-  mutate(base_weight = onet_weight / sum(onet_weight),
+  mutate(base_weight = path_weight / sum(path_weight),
          down_weight = base_weight^gt_one,
          down_weight = down_weight/ sum(down_weight)
          )|>
   ungroup()|>
-  arrange(noc_2021, desc(base_weight), onet_soc_code)
+  arrange(noc_2021, desc(down_weight), onet_soc_code)|>
+  select(onet_soc_code, onet_plus_title, noc_2021, noc_plus_title, equal_weight, path_weight, base_weight, down_weight)
 
-# ------------------------------------------------------------------
-# Mapping strength
-# ------------------------------------------------------------------
+# average distance (in 10D pca) between ONET occupations and NOC (weighted) centroid-------------
 
-mapping_strength <- mapping |>
-  group_by(noc_plus_title, noc_2021) |>
-  summarise(base_herf = sum(base_weight^2),
-            down_herf = sum(down_weight^2), .groups = "drop") |>
-  arrange(noc_2021)
+mapping_with_diagnostics <- mapping|>
+  select(onet_soc_code, onet_plus_title, noc_2021, noc_plus_title, equal_weight, base_weight, down_weight)|>
+  left_join(onet_prcomp10, by = join_by(onet_soc_code))|>
+  group_by(noc_plus_title, noc_2021)|>
+  mutate(down_herf = sum(down_weight^2)
+         )|>
+  nest()|>
+  mutate(down_dispersion = map_dbl(data, ~ calc_mapping_dispersion(.x, down_weight)))|>
+  unnest(data)|>
+  mutate(weight_shift=.5* sum(abs(base_weight - down_weight))) # total variation distance between base and down-weighted mappings
 
-# ------------------------------------------------------------------
-# Write outputs
-# ------------------------------------------------------------------
-write_csv(onet_data, file.path(out_dir, "onet_data.csv"))
+ 
+diagnostics <- mapping_with_diagnostics |>
+  group_by(noc_2021, noc_plus_title) |>
+  summarise(
+    `Herfindahl Index` = first(down_herf),
+    `Distance from centroid` = first(down_dispersion),
+    `Share of weights reallocated` = first(weight_shift),
+    .groups = "drop"
+  )|>
+  mutate(
+   `Scaled Similarity` = 1+min(`Herfindahl Index`)-percent_rank(`Distance from centroid`),
+    sort_score = `Scaled Similarity`*`Herfindahl Index`
+  )|>
+  arrange(sort_score)
+
+
+# Write outputs-----------------------------
+
 write_csv(onet_to_noc2021_paths, file.path(out_dir, "onet_to_noc2021_paths.csv"))
 write_csv(mapping, file.path(out_dir, "onet_to_noc2021_mapping.csv"))
-write_csv(mapping_strength, file.path(out_dir, "onet_to_noc2021_mapping_strength.csv"))
+write_csv(diagnostics, file.path(out_dir, "diagnostics.csv"))
 
 metadata_lines <- c(
   sprintf("Run timestamp: %s", Sys.time()),
-  sprintf("n_paths: %s", nrow(onet_to_noc2021_paths)),
   sprintf("n_mapping_rows: %s", nrow(mapping)),
   sprintf("n_noc2021: %s", n_distinct(mapping$noc_plus_title)),
   sprintf("version: %s", VERSION)

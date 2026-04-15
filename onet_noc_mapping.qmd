@@ -2,13 +2,28 @@
 title: "Transparent O*NET to NOC 2021 Mapping"
 format:
   html:
+    self-contained: true
     code-fold: true
+execute:
+  echo: true
+  warning: false
+  message: false    
 ---
 
 ```{r, include=FALSE}
 library(tidyverse)
 library(reactable)
+library(plotly)
 library(fs)
+library(conflicted)
+conflicts_prefer(
+  dplyr::filter,
+  dplyr::select,
+  dplyr::mutate,
+  dplyr::summarise,
+  dplyr::arrange
+)
+
 # find latest version directory under output/
 version_dirs <- fs::dir_ls("output", type = "directory")
 
@@ -29,60 +44,21 @@ latest_dir <- version_tbl$path[order(versions, decreasing = TRUE)[1]]
 latest_version <- fs::path_file(latest_dir)
 message("Using data from: ", latest_dir)
 
-onet_to_noc2021_paths <- read_csv(paste0(latest_dir,"/onet_to_noc2021_paths.csv"))
-onet_data <- read_csv(paste0(latest_dir,"/onet_data.csv"))
-mapping <- read_csv(paste0(latest_dir,"/onet_to_noc2021_mapping.csv"))
-mapping_strength <- read_csv(paste0(latest_dir,"/onet_to_noc2021_mapping_strength.csv"))
-# -----------------------------------------------------------------
-# Naive mapping 
-#-----------------------------------------------------------------
-
-naive_mapping <- onet_to_noc2021_paths|>
-  select(onet_soc_code, onet_plus_title, noc_2021, noc_plus_title)
-
-# ---------------------------------------------------------------
-# Comparison between down_weight and naive_mapping
-#----------------------------------------------------------------
-
-naive_skills <- left_join(naive_mapping, onet_data, by = join_by(onet_soc_code)) |>
-  select(-onet_soc_code) |>
-  group_by(noc_plus_title) |>
-  summarise(across(where(is.numeric), \(x) mean(x, na.rm = TRUE)))
-
-downweight_skills <- mapping|>
-  select(onet_soc_code, noc_plus_title, down_weight)|>
-  left_join(onet_data, by = join_by(onet_soc_code))|>
-  mutate(across(where(is.numeric) & !all_of("down_weight"), ~ .x * down_weight)) |>
-  group_by(noc_plus_title) |>
-  summarise(across(where(is.numeric), ~ sum(.x, na.rm = TRUE)))|>
-  select(-down_weight)
-
-#ensure alignment------------------------
-
-naive_mat <- naive_skills |>
-  column_to_rownames("noc_plus_title")
-
-downweight_mat <- downweight_skills |>
-  column_to_rownames("noc_plus_title")
-
-common_noc <- intersect(rownames(naive_mat), rownames(downweight_mat))
-common_vars <- intersect(colnames(naive_mat), colnames(downweight_mat))
-
-naive_mat <- naive_mat[common_noc, common_vars]
-downweight_mat <- downweight_mat[common_noc, common_vars]
-
-stopifnot(all(rownames(naive_mat) == rownames(downweight_mat)))
-
-delta_euclid <- sqrt(rowSums((naive_mat - downweight_mat)^2))
-
-tbbl_delta <- tibble(
-  noc_plus_title = rownames(naive_mat),
-  delta_euclid = delta_euclid
+required_files <- c(
+  "onet_to_noc2021_mapping.csv",
+  "diagnostics.csv",
+  "onet_to_noc2021_paths.csv"
 )
 
-tbbl_compare <- tbbl_delta |>
-  left_join(mapping_strength, by = join_by(noc_plus_title))
+missing_files <- required_files[!file.exists(file.path(latest_dir, required_files))]
 
+if (length(missing_files) > 0) {
+  stop("Missing expected output files: ", paste(missing_files, collapse = ", "))
+}
+
+mapping <- read_csv(paste0(latest_dir,"/onet_to_noc2021_mapping.csv"))
+diagnostics <- read_csv(paste0(latest_dir,"/diagnostics.csv"))
+onet_to_noc2021_paths <- read_csv(paste0(latest_dir, "/onet_to_noc2021_paths.csv"))
 ```
 
 ## Data version
@@ -103,7 +79,7 @@ As a result, users cannot audit or replicate how each skill profile is formed.
 This project instead constructs the mapping explicitly, allowing:
 
 - full transparency of inputs and weights  
-- diagnostic evaluation of mapping quality  
+- diagnostic evaluation of mapping quality: in particular, whether mapped occupations form a coherent cluster in skill space  
 - reproducibility of all outputs  
 
 ---
@@ -114,7 +90,7 @@ A common approach is to join crosswalks:
 
 O*NET → SOC → NOC
 
-This produces many-to-many expansions and implicitly assigns equal weight across all paths.
+This produces many-to-many expansions and implicitly assigns equal weight across all admissible paths.
 
 This leads to:
 
@@ -122,33 +98,7 @@ This leads to:
 - inclusion of unrelated occupations  
 - distorted skill vectors 
 
-For instance, consider 72600: Air pilots, flight engineers and flying instructors. The naive 
-mapping would apply equal weighting to the following rows:
-
-```{r}
-naive_mapping|> 
-  filter(noc_plus_title == "72600: Air pilots, flight engineers and flying instructors")|>
-  select(onet_plus_title, noc_plus_title)|>
-  reactable(
-  columns = list(onet_plus_title = colDef(name = "O*NET occupation"),
-                 noc_plus_title = colDef(name = "NOC")),
-  searchable = FALSE,
-  filterable = FALSE,
-  sortable = TRUE,
-  pagination = FALSE,
-  bordered = TRUE,
-  striped = TRUE,
-  highlight = TRUE
-)
-```
-
----
-
-Only $\frac38$ of the skill profile for NOC 72600: Air pilots, flight engineers and flying instructors is coming from pilots! The other $\frac58$ is derived from the skill profiles of agricultural workers.  
-
----
-
-## 3. Mapping construction
+## 3. Weighted mapping construction
 
 The mapping is constructed in three stages:
 
@@ -168,21 +118,68 @@ $$
 
 where each stage distributes mass equally across branches.
 
-### Aggregation
+### Example
 
-Weights are aggregated to the NOC level and normalized.
+Consider 72600: Air pilots, flight engineers and flying instructors.  The table below
+features two different weighting notions.  Naive weights put an equal weight on all paths^[Note that there are two separate paths from 53-2012.00: Commercial Pilots.] from O*NET occupations to 72600: Air pilots, flight engineers and flying instructors.   
+
+In contrast, path weights indicate the extent of splitting across the crosswalks: 
+
+- For 53-2011.00: Airline Pilots, Copilots, and Flight Engineers there are no splits along the crosswalk: the only path is to 72600: Air pilots, flight engineers and flying instructors, so this path gets a weight of 1. 
+- For the first path leading from 53-2012.00: Commercial Pilots there is a 2 way split, so the path weight = .5. 
+- For the second path leading from 53-2012.00: Commercial Pilots there is both a 2 way and a 4 way split, so the path weight is .125.
+- Notice that path weights tend to be smaller than the naive weights for the O\*NET agricultural occupations.  
+
+
+```{r}
+onet_to_noc2021_paths|> 
+  filter(noc_plus_title == "72600: Air pilots, flight engineers and flying instructors")|>
+  select(onet_plus_title, noc_plus_title, equal_weight, path_weight)|>
+  janitor::adorn_totals()|>
+  reactable(
+  columns = list(onet_plus_title = colDef(name = "O*NET occupation"),
+                 noc_plus_title = colDef(name = "NOC"),
+                 equal_weight =colDef(name = "Naive weights"),
+                 path_weight =colDef(name = "Path weights", format = colFormat(digits = 4))
+                 ),
+  searchable = FALSE,
+  filterable = FALSE,
+  sortable = TRUE,
+  pagination = FALSE,
+  bordered = TRUE,
+  striped = TRUE,
+  highlight = TRUE
+)
+```
+
+---
+
+If we use the naive weights to create an average skill profile for NOC 72600: Air pilots, flight engineers and flying instructors, it would mostly ($\frac58$) reflect agricultural workers. 
+
+---
+
+
+### Base weights
+
+- To derive our "Base weights" from the above table, first we aggregate path weights by origin and destination, and then normalize so they sum to one. 
+
+- e.g. from above we see that the total path weight is 2.1042, so 53-2011.00: Airline Pilots, Copilots, and Flight Engineers base weight is $\frac{1}{2.1042}=0.48$.
+
+- Similarly 53-2012.00: Commercial Pilots have an *aggregate* path weight of .625, so its base weight is $\frac{.625}{2.1042}=0.3$. 
+
+- Note that by switching from naive weights to path weights 78% of the skill profile is based on the skills of... pilots.  
+
 
 ### Downweighting
 
-A power transformation is applied:
+Finally, a power transformation and re-normalization is undertaken to further diminish the weights on mapping artifacts (in this case,  agricultural occupations)
 
 $$
 \tilde{w}_k \propto w_k^{2}
 $$
 
-to reduce the influence of small-weight links.
 
-Now we can return to our 72600: Air pilots, flight engineers and flying instructors example, and investigate these weights.
+The full table of weights for 72600: Air pilots, flight engineers and flying instructors is below:
 
 ```{r}
 mapping|> 
@@ -206,7 +203,7 @@ mapping|>
 
 ---
 
-Using the base weights, 78% of the skill profile is being derived from pilots.  Recall in the naive case, only 37.5% of the skill profile came from pilots. Things improve further if one uses the down weight: now 96% of the skill profile is derived from pilots.  This is the most extreme example of a difference in skill profile between the naive weights and either the base or down weights. 
+Using the down weights results in 96% of the skill profile being based on pilots.  This example is not typical, but is illustrative of the problem associated with using naive weights. 
 
 ---
 
@@ -214,9 +211,10 @@ Using the base weights, 78% of the skill profile is being derived from pilots.  
 
 The build process produces:
 
-- `onet_to_noc2021_paths`  
-- `mapping`  
-- `mapping_strength`  
+
+- `onet_to_noc2021_mapping.csv`  
+- `diagnostics.csv`  
+- `onet_to_noc2021_paths.csv`
 
 Each output is fully reproducible from raw inputs.
 
@@ -237,53 +235,49 @@ Interpretation:
 - High H → well-defined occupation  
 - Low H → heterogeneous occupation  
 
-### Sensitivity to naive mapping (Δ)
+### Scaled Similarity
 
-$$
-\Delta = || s_{naive} - s_{weighted} ||
-$$
+We represent each O\*NET occupation as a point in a reduced skill space (using the first 10 principal components), and for each NOC we compute a weighted centroid of these points using the mapping weights. This centroid can be interpreted as the “average” skill profile implied by the mapping. We then measure how far each contributing O*NET occupation lies from this centroid and take a weighted average of those distances. The resulting statistic captures the coherence of the mapping in skill space: low values indicate that the mapped occupations form a tight, internally consistent cluster, while high values indicate that the NOC is being represented by a set of occupations with very different skill profiles.
 
-Interpretation:
-
-- Large Δ → naive mapping is misleading  
-- Small Δ → naive mapping is acceptable  
+As a final transformation we take the percentile value of the above statistic, and subtract it from one, and call it scaled similarity. This puts it on a similar scale to the Herfindahl index.  We sort our diagnostic table on the product of Herfindahl and this scaled similarity.  
 
 ---
 
-## 6. Interpreting H and Δ
+## 6. Interpreting Herfindahl and Scaled Similarity
 
 These measure different things:
 
-- **H**: whether a single skill profile is meaningful  
-- **Δ**: whether naive mapping introduces error  
+- **Herfindahl**: how diffuse/concentrated is the NOC in terms of O\*NET contributions 
+- **Scaled Similarity**: how similar the O\*NET contributions are. 
 
 ### Cases
 
-- High H, low Δ → stable and well-defined  
-- High H, high Δ → naive mapping contaminated  
-- Low H, NOC is inherently too broad, no way to fix  
+- High Herfindahl, any value of scaled similarity: no problem, almost all weight put on a single O\*NET occupation.
+- Low Herfindahl, high scaled similarity: no problem, a diffuse weighted average of highly similar O\*NET occupations. 
+- Low Herfindahl, low scaled similarity: big problem, a diffuse weighted average of disparate O\*NET occupations.
 
 ### Plot
 
 ```{r}
-plt <- ggplot(tbbl_compare, aes(x = down_herf, y = delta_euclid, label=noc_plus_title)) +
-  geom_point(alpha = 0.25) +
-  labs(
-    x = "Herfindahl (mapping concentration)",
-    y = "Change in skill vector (Euclidean distance)"
-  )
-plotly::ggplotly(plt)
+plt <- diagnostics|>
+  ggplot(aes(`Herfindahl Index`, `Scaled Similarity`))+
+  coord_equal() +
+  coord_cartesian(xlim = c(-.1, 1.1), ylim = c(-.1, 1.1)) +  
+  geom_jitter(aes(fill=`Share of weights reallocated`, label=noc_plus_title), shape=21, width=.01, height=.01, size=2)+
+  scale_fill_viridis_c()+
+  labs(title="Mapping Quality: Problematic NOCs close to origin(low concentration, low similarity)")
+
+ggplotly(plt) 
 ```
 
 
 
 ---
 
-## 7. Low H example
+## 7. Low Herfindahl, low scaled similarity example
 
-41200: University professors and lecturers are a good example of a NOC where there 
-is no solution to the problem that this group is just too diverse to be represented by a
-single skill profile. 
+41200: University professors and lecturers are a good example of the mapping problem: diffuse weighting of 
+disparate skill profiles.
 
 ```{r}
 mapping|> 
@@ -309,7 +303,7 @@ mapping|>
 ## 8. Guidance for use
 
 - Use down weight mapping as default  
-- Treat mapped skill profiles of low-H occupations with caution  
+- Treat mapped skill profiles of low-H low similarity occupations with caution  
 - Avoid naive mapping  
 
 ---
