@@ -84,11 +84,11 @@ This project instead constructs the mapping explicitly, allowing:
 
 ---
 
-## 2. Why naive crosswalk chaining fails
+## 2. Why naive crosswalk chaining can fail
 
 A common approach is to join crosswalks:
 
-O*NET → SOC → NOC
+O*NET 2019 → SOC 2018 → NOC 2016 → NOC 2021  
 
 This produces many-to-many expansions and implicitly assigns equal weight across all admissible paths.
 
@@ -110,13 +110,13 @@ Each stage introduces potential one-to-many relationships.
 
 ### Path weights
 
-Weights are assigned as:
+For each of the above stages we assign weights on the basis of splits in the crosswalk. e.g. If at step 2 in 
+the chain a SOC 2018 is split into 4 NOC 2016, then $w_2=.25$ for each of the 4 paths.  Once all the crosswalks are 
+joined, path weights are defined to be the product of each step's weight: 
 
 $$
 w_{path} = w_1 \times w_2 \times w_3
 $$
-
-where each stage distributes mass equally across branches.
 
 ### Example
 
@@ -237,9 +237,9 @@ Interpretation:
 
 ### Scaled Similarity
 
-We represent each O\*NET occupation as a point in a reduced skill space (using the first 10 principal components), and for each NOC we compute a weighted centroid of these points using the mapping weights. This centroid can be interpreted as the “average” skill profile implied by the mapping. We then measure how far each contributing O*NET occupation lies from this centroid and take a weighted average of those distances. The resulting statistic captures the coherence of the mapping in skill space: low values indicate that the mapped occupations form a tight, internally consistent cluster, while high values indicate that the NOC is being represented by a set of occupations with very different skill profiles.
+We represent each O\*NET occupation as a point in a reduced skill space (using the first 10 principal components), and for each NOC we compute a weighted centroid of these points using the down weights. This centroid is the “average” skill profile implied by the mapping. We then measure how far each contributing O*NET occupation lies from this centroid and take a weighted average of those distances. The resulting statistic captures the coherence of the mapping in skill space: low values indicate that the mapped occupations form a tight, internally consistent cluster, while high values indicate that the NOC is being represented by a set of occupations with very different skill profiles.
 
-As a final step, we convert the above into normalized similarity measure with the same support as the Herfindahl index. Specifically, we take the distances, divide by their maximal value, multiply by .95, and then subtract from 1. We refer to this as scaled similarity. The diagnostic table is then ordered by the product of the Herfindahl index and scaled similarity, favoring mappings that are both concentrated and internally coherent.
+As a final step, we convert the above into normalized similarity measure with a similar support as the Herfindahl index. Specifically, we take each NOC's average distance, and divide by the maximal value (across all NOCs), multiply by .95, and then subtract from 1. We refer to this derived measure as scaled similarity. The diagnostic table is then ordered by the product of the Herfindahl index and scaled similarity, favoring mappings that are both concentrated and internally coherent.
 
 ---
 
@@ -304,7 +304,14 @@ mapping|>
 
 - Use down weight mapping as default  
 - Treat mapped skill profiles of low-H low similarity occupations with caution  
-- Avoid naive mapping  
+- Avoid naive mapping
+- Direct download from github (R users)
+
+```r
+mapping <- readr::read_csv(
+  "https://raw.githubusercontent.com/bcgov/onet-noc2021-crosswalk/main/output/3.0.0/onet_to_noc2021_mapping.csv"
+)
+```
 
 ---
 
