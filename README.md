@@ -128,12 +128,15 @@ Higher values indicate more concentrated mappings.
 
 ---
 
-### 2. Dispersion in skill space
+### 2. Scaled similarity
 
-Dispersion measures how tightly the mapped O*NET occupations cluster in skill space.
+We represent each O*NET occupation in a reduced skill space (first 10 principal components) and compute a weighted centroid for each NOC using the down weights. We then calculate the weighted average distance of contributing occupations from this centroid.
 
-- Low dispersion → occupations are similar → a single skill profile is representative  
-- High dispersion → occupations are heterogeneous → a single profile is misleading  
+This captures how coherent the mapping is in skill space: low values indicate a tight cluster, high values indicate dispersed, inconsistent skill profiles.
+
+We convert this into a normalized similarity measure (with similar support as the Herfindahl index) by scaling distances to the range [0,.95] and then inverting them.
+
+The final diagnostic ranks NOCs by the product of the Herfindahl index and scaled similarity, favoring mappings that are both concentrated and internally coherent.
 
 ---
 
